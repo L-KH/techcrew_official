@@ -1,0 +1,21 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+.idea/
+.vscode/
+
+# build / deps (in case we ever add a bundler)
+node_modules/
+dist/
+build/
+.cache/
+
+# old design artifacts from the initial zip
+_extracted/
+
+# logs
+*.log
+npm-debug.log*

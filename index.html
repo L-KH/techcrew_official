@@ -1,0 +1,2073 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tech Crew — FLL C-325 · توندوت، المغرب</title>
+<link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='28' fill='%23D97706'/></svg>"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#D97706;
+    --secondary:#78350F;
+    --accent:#FCD9A8;
+    --ink:#1f1208;
+    --panel:#fff8ef;
+  }
+  html,body{ background:#fafafa; color:var(--ink); font-family:'Inter', system-ui, sans-serif; }
+  .font-display{ font-family:'Space Grotesk', system-ui, sans-serif; letter-spacing:-0.01em; }
+  /* Arabic typography — Cairo (modern, balanced) with Tajawal fallback */
+  html[lang="ar"] body,
+  html[dir="rtl"] body { font-family: 'Cairo', 'Tajawal', 'Inter', system-ui, sans-serif; }
+  html[lang="ar"] .font-display,
+  html[dir="rtl"] .font-display { font-family: 'Cairo', 'Tajawal', system-ui, sans-serif; letter-spacing: 0; font-weight: 800; }
+  /* preserve LTR for proper-noun runs inside Arabic prose */
+  .ltr-keep { unicode-bidi: isolate; direction: ltr; display: inline-block; }
+  .theme-transition, .theme-transition *{
+    transition: background-color 600ms ease-in-out, color 600ms ease-in-out, border-color 600ms ease-in-out, fill 600ms ease-in-out, stroke 600ms ease-in-out, box-shadow 600ms ease-in-out;
+  }
+  /* don't transition the moving underline — it has its own transform transition */
+  .nav-underline{ transition: transform 500ms cubic-bezier(.4,0,.2,1), width 500ms cubic-bezier(.4,0,.2,1), background-color 500ms ease; }
+
+  @keyframes fadeUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform:none; } }
+  .season-anim > * { animation: fadeUp 600ms cubic-bezier(.4,0,.2,1) both; }
+  .season-anim > *:nth-child(1){ animation-delay: 0ms; }
+  .season-anim > *:nth-child(2){ animation-delay: 80ms; }
+  .season-anim > *:nth-child(3){ animation-delay: 160ms; }
+  .season-anim > *:nth-child(4){ animation-delay: 240ms; }
+  .season-anim > *:nth-child(5){ animation-delay: 320ms; }
+  .season-anim > *:nth-child(6){ animation-delay: 400ms; }
+  .season-anim > *:nth-child(7){ animation-delay: 480ms; }
+
+  /* ripple */
+  @keyframes rippleExpand {
+    from { transform: scale(0); opacity: .55; }
+    to   { transform: scale(420); opacity: 0; }
+  }
+  .ripple{
+    position: fixed; pointer-events: none; z-index: 60;
+    width: 10px; height: 10px; border-radius: 9999px;
+    animation: rippleExpand 800ms cubic-bezier(.4,0,.2,1) forwards;
+    will-change: transform, opacity;
+  }
+
+  /* lightbox */
+  @keyframes lbFade { from{opacity:0} to{opacity:1} }
+  .lb-backdrop{ animation: lbFade 200ms ease-out both; }
+
+  .grid-bg{
+    background-image:
+      linear-gradient(to right, color-mix(in oklab, var(--ink) 8%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, var(--ink) 8%, transparent) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .scribble-underline{
+    background-image: linear-gradient(transparent 60%, color-mix(in oklab, var(--primary) 60%, transparent) 60%);
+    background-repeat:no-repeat;
+    background-size: 100% 100%;
+  }
+  .sponsor-logo{ filter: grayscale(1) contrast(.9); opacity:.7; transition: filter .35s, opacity .35s, transform .35s, box-shadow .35s;}
+  .sponsor-logo:hover{ filter: none; opacity:1; transform: translateY(-3px); }
+  .nav-scroll::-webkit-scrollbar{ height:0; }
+
+  .member-card .bio{ opacity:0; transform: translateY(6px); transition: opacity .25s, transform .25s; pointer-events:none; }
+  .member-card:hover .bio{ opacity:1; transform:none; }
+
+  /* brilliant trophy sparkles */
+  @keyframes sparklePulse {
+    0%, 100% { opacity: 0;    transform: scale(0.4) rotate(0deg); }
+    50%      { opacity: 1;    transform: scale(1.2) rotate(20deg); }
+  }
+  .sparkle {
+    position: absolute;
+    color: #FFE992;
+    font-size: 10px;
+    line-height: 1;
+    pointer-events: none;
+    text-shadow: 0 0 6px rgba(255,228,120,0.95), 0 0 12px rgba(255,228,120,0.55);
+    animation: sparklePulse 2.4s ease-in-out infinite;
+  }
+
+  /* logo hover — bouncy pop + slight tilt + pulsing season-colored glow */
+  .logo-anim{ transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease; will-change: transform; }
+  .logo-anim:hover{ transform: scale(1.08) rotate(-3deg); animation: logoGlow 1.3s ease-in-out infinite; }
+  @keyframes logoGlow{
+    0%,100%{ box-shadow: 0 0 0 2px var(--ink), 0 0 8px 1px color-mix(in oklab, var(--primary) 55%, transparent); }
+    50%    { box-shadow: 0 0 0 2px var(--ink), 0 0 22px 6px color-mix(in oklab, var(--primary) 92%, transparent); }
+  }
+
+  /* hero slideshow cross-fade — backdrop fills, foreground stays uncropped */
+  .slide{ position: absolute; inset: 0; transition: opacity 1200ms cubic-bezier(.4,0,.2,1); }
+  .slide-backdrop{ position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.15); filter: blur(28px) brightness(0.85); }
+  .slide-main    { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useLayoutEffect, useRef, useMemo } = React;
+
+/* ================================================================== */
+/*  i18n                                                              */
+/* ================================================================== */
+const I18N = {
+  ar: {
+    teamSub: "FLL C-325 · توندوت، المغرب",
+    navMessage: "رسالتنا",
+    bannerKicker: "Tech Crew · FLL C-325",
+    bannerLead: "خلف كلّ روبوتٍ نبنيه، حُلمُ تلميذٍ من توندوت بأن يصير مهندسًا أو مبرمجًا أو مخترعًا.",
+    bannerBody: "نحن Tech Crew نحوّل هذا الحلم إلى واقع: نصمّم، ونبرمج، ونتنافس باسم جهتنا في المسابقة الوطنية لـ FIRST LEGO League. لكنّ الطريق إلى المنصّة يمرّ عبر قطعٍ إلكترونية وتجهيزاتٍ ورحلاتٍ تفوق إمكانياتنا وحدنا — وهنا يأتي دوركم.",
+    bannerPerksLabel: "شعارُ شريكنا يرافقنا في كلّ مكان:",
+    bannerPerks: ["على الروبوت", "على القمصان", "على الملصقات", "على الموقع", "على شبكاتنا الاجتماعية"],
+    bannerCta: "كن شريكًا لنا",
+    seasonLabel: "موسم",
+    meetRobot: "تعرّف على الروبوت",
+    seeProject: "اكتشف المشروع",
+    statMembers: "أعضاء",
+    statSeasons: "مواسم",
+    statQuals: "تأهّلات وطنية",
+    aboutKicker: "من نحن",
+    aboutTitle: "عن Tech Crew",
+    aboutP1: "نحن Tech Crew، فريقٌ شاب وطموح من عشّاق الروبوتيك، من الثانوية الإعدادية الشهيد المدني شفيق بتوندوت، إقليم ورزازات، جهة درعة-تافيلالت بالمغرب.",
+    aboutP2: "تأسّس فريقنا لتنمية مهاراتنا في البرمجة والتصميم والهندسة، ولنشر الثقافة العلمية والتكنولوجية داخل محيطنا. ومن خلال FIRST LEGO League نخوض التحدّيات، ونبتكر، ونُلهم شبابًا آخرين لاكتشاف عالم STEM (العلوم، التكنولوجيا، الهندسة، والرياضيات).",
+    aboutFact1Label: "أعمار الأعضاء",
+    aboutFact1Value: "12 — 16",
+    aboutFact2Label: "موقعنا",
+    aboutFact2Value: "توندوت",
+    aboutFact3Label: "رقم الفريق",
+    aboutFact3Value: "FLL C-325",
+    achievementsKicker: "01 · نتائج الموسم",
+    achievementsTitle: "إنجازاتنا",
+    robotKicker: "02 · الهندسة",
+    robotTitle: "روبوتنا",
+    robotMeet: "تعرّف على",
+    robotAttachments: "الملحقات الأساسية",
+    robotStrategy: "البرمجة والاستراتيجية",
+    robotMissions: "المهمّات المُنجزة",
+    projectKicker: "03 · مشروع الابتكار",
+    projectProblem: "المشكلة",
+    projectSolution: "حلّنا",
+    projectImpact: "الأثر",
+    teamKicker: "04 · الفريق",
+    teamTitle: "أعضاء الفريق",
+    teamCoaches: "المؤطّرون",
+    teamStudents: "التلاميذ",
+    sponsorsKicker: "05 · الشركاء",
+    sponsorsTitle: "شكرًا لشركائنا",
+    sponsorsSubtitle: "دعم Tech Crew هو استثمار في المستقبل والابتكار، وفي شبابٍ شغوفين بالتكنولوجيا.",
+    sponsorSlot: "شعارك هنا",
+    footerViewing: "تستعرض الآن",
+    footerBuilt: "موقع من إنجاز الفريق.",
+    footerSponsorTitle: "كن شريكًا لنا",
+    footerSponsorCopy:  "انضمّ إلينا لدعم مبتكرين شباب! تبدأ صيغ الشراكة من 500 درهم. شعارك على روبوتنا، قمصاننا، ملصقاتنا، موقعنا، وعلى شبكاتنا الاجتماعية.",
+    footerSponsorBtn:   "تحميل ملف الشراكة",
+    footerContactTitle: "تواصلوا معنا",
+    todo: "للملء",
+    photoTodo: "أضف صورة",
+    notAvailable:      "غير متوفّر حاليًا",
+    notAvailableSub:   "سنُحدّث هذا القسم لاحقًا.",
+  },
+  fr: {
+    teamSub: "FLL C-325 · Toundoute, Maroc",
+    navMessage: "Notre message",
+    bannerKicker: "Tech Crew · FLL C-325",
+    bannerLead: "Derrière chaque robot que nous construisons, il y a le rêve d'un élève de Toundoute : devenir ingénieur, programmeur ou inventeur.",
+    bannerBody: "Tech Crew transforme ce rêve en réalité : nous concevons, programmons et représentons notre région à la compétition nationale FIRST LEGO League. Mais le chemin vers le podium passe par des composants, du matériel et des déplacements qui dépassent nos seuls moyens — et c'est là que vous intervenez.",
+    bannerPerksLabel: "Le logo de notre partenaire nous accompagne partout :",
+    bannerPerks: ["Sur le robot", "Sur les t-shirts", "Sur les affiches", "Sur le site", "Sur nos réseaux"],
+    bannerCta: "Devenez partenaire",
+    seasonLabel: "Saison",
+    meetRobot: "Voir le robot",
+    seeProject: "Voir le projet",
+    statMembers: "membres",
+    statSeasons: "saisons",
+    statQuals: "qualifs nationales",
+    aboutKicker: "Qui sommes-nous",
+    aboutTitle: "À propos de Tech Crew",
+    aboutP1: "Nous sommes Tech Crew, une équipe innovante et ambitieuse de jeunes passionnés de robotique, du Collège Chahid El Madani Chafik, Toundoute, Province d'Ouarzazate, Région Drâa-Tafilalet, Maroc.",
+    aboutP2: "Fondée pour développer nos compétences en programmation, conception et ingénierie, notre équipe promeut la culture scientifique et technologique au sein de notre communauté. À travers la FIRST LEGO League, nous relevons des défis, nous innovons et nous inspirons d'autres jeunes à explorer les STEM (Sciences, Technologie, Ingénierie et Mathématiques).",
+    aboutFact1Label: "Âge des membres",
+    aboutFact1Value: "12 — 16",
+    aboutFact2Label: "Basés à",
+    aboutFact2Value: "Toundoute",
+    aboutFact3Label: "N° d'équipe",
+    aboutFact3Value: "FLL C-325",
+    achievementsKicker: "01 · Résultats",
+    achievementsTitle: "Nos Réalisations",
+    robotKicker: "02 · Ingénierie",
+    robotTitle: "Notre Robot",
+    robotMeet: "voici",
+    robotAttachments: "Accessoires clés",
+    robotStrategy: "Programmation & stratégie",
+    robotMissions: "Missions accomplies",
+    projectKicker: "03 · Projet d'Innovation",
+    projectProblem: "le problème",
+    projectSolution: "notre solution",
+    projectImpact: "impact",
+    teamKicker: "04 · L'équipe",
+    teamTitle: "Les Membres",
+    teamCoaches: "Coachs",
+    teamStudents: "Membres étudiants",
+    sponsorsKicker: "05 · Partenaires",
+    sponsorsTitle: "Merci à nos Partenaires",
+    sponsorsSubtitle: "Soutenir Tech Crew, c'est investir dans l'avenir, l'innovation et la jeunesse passionnée par la technologie.",
+    sponsorSlot: "Votre logo ici",
+    footerViewing: "Saison —",
+    footerBuilt: "Site réalisé par l'équipe.",
+    footerSponsorTitle: "Devenir Sponsor",
+    footerSponsorCopy:  "Rejoignez-nous pour soutenir de jeunes innovateurs ! Les formules démarrent à 500 MAD. Votre logo sur notre robot, t-shirts, affiches, site web et réseaux sociaux.",
+    footerSponsorBtn:   "Télécharger le Dossier de Sponsoring",
+    footerContactTitle: "Contactez-nous",
+    todo: "À COMPLÉTER",
+    photoTodo: "ajouter photo →",
+    notAvailable:      "Pas encore disponible",
+    notAvailableSub:   "Cette section sera complétée prochainement.",
+  },
+};
+
+/* ================================================================== */
+/*  Seasons — only the 3 Tech Crew actually competed in                */
+/* ================================================================== */
+const SEASONS = [
+  {
+    id: "superpowered",
+    name: "SUPERPOWERED",
+    years: "2022 — 2023",
+    noTrophy: true,
+    noDetails: true, // robot + project details not available — show "Not available" notice
+    theme: { primary: "#FACC15", secondary: "#DC2626", accent: "#2563EB", ink:"#1a1208", panel:"#fffdf2" },
+    tagline: {
+      ar: "نُشحن مستقبل الطاقة — موسمنا الأوّل في FIRST LEGO League.",
+      fr: "Énergiser l'avenir — notre toute première saison FIRST LEGO League.",
+    },
+    achievements: {
+      ar: [
+        { title: "أوّل ظهور جهوي · مراكش", note: "أوّل مشاركة لـ Tech Crew في المسابقة الجهوية لـ FIRST LEGO League بمراكش." },
+        { title: "🏆 جائزة Motivate Award", note: "تكريم في موسمنا الأوّل بجائزة Motivate Award — اعترافًا بحماس الفريق وروح التنافس والتعاون.", highlight: true },
+        { title: "بداية المغامرة", note: "علامة فارقة في انطلاقة مغامرة فريقنا داخل FIRST LEGO League." },
+      ],
+      fr: [
+        { title: "Premier régional · Marrakech", note: "Première participation de Tech Crew à la compétition FIRST LEGO League régionale à Marrakech." },
+        { title: "🏆 Motivate Award", note: "Récompensés dès notre première saison par le Motivate Award — pour l'enthousiasme, l'esprit de compétition et de coopération de l'équipe.", highlight: true },
+        { title: "Le début de l'aventure", note: "Tout début du parcours de notre équipe en FIRST LEGO League." },
+      ],
+    },
+    robot: { name: "" },
+    project: {
+      ar: { title: "مشروع الابتكار — SUPERPOWERED" },
+      fr: { title: "Projet d'Innovation — SUPERPOWERED" },
+    },
+  },
+  {
+    id: "masterpiece",
+    name: "MASTERPIECE",
+    years: "2023 — 2024",
+    noTrophy: true, // only the Innovative Project award card shows a trophy
+    theme: { primary: "#9333EA", secondary: "#F59E0B", accent: "#EC4899", ink:"#1a0e22", panel:"#fbf6ff" },
+    tagline: {
+      ar: "حيث يلتقي الفنّ بالهندسة — ووصول Tech Crew إلى الواجهة الوطنية.",
+      fr: "Quand l'art rencontre l'ingénierie — et Tech Crew accède au national.",
+    },
+    achievements: {
+      ar: [
+        { title: "تأهّل وطني · ابن جرير", note: "التأهّل للمنافسة الوطنية بابن جرير — محطّة فارقة تُثبت تطوّر قدرات فريقنا." },
+        { title: "🏆 الجائزة الثانية — Innovative Project Award", note: "تكريم في المنافسة الوطنية على عمق مشروع الابتكار والنموذج الأوّلي.", highlight: true },
+        { title: "قدرات في تصاعد", note: "خطوة كبيرة تُؤكّد تطوّر الفريق وقدرته على المنافسة على مستوى عالٍ." },
+      ],
+      fr: [
+        { title: "Qualifiés au National · Ben Guerir", note: "Qualification à la compétition nationale à Ben Guerir — étape majeure prouvant nos capacités grandissantes." },
+        { title: "🏆 2ème prix — Innovative Project Award", note: "Récompensés au National pour la profondeur de notre projet d'innovation et de son prototype.", highlight: true },
+        { title: "Une équipe en progression", note: "Avancée majeure démontrant la progression de l'équipe et sa capacité à concourir à un niveau élevé." },
+      ],
+    },
+    robot: { name: "TechcrewBot" },
+    project: {
+      ar: { title: "Backstage — مسرح عرائس متحرّك للتعبير بثقة", specialNote: "🏆 الفائز بالجائزة الثانية — Innovative Project Award" },
+      fr: { title: "Backstage — un théâtre de marionnettes animé pour s'exprimer en confiance",  specialNote: "🏆 Lauréats du 2ème prix — Innovative Project Award" },
+    },
+  },
+  {
+    id: "submerged",
+    name: "SUBMERGED",
+    years: "2024 — 2025",
+    noTrophy: true, // ranking results only, no physical trophy this season
+    theme: { primary: "#0EA5E9", secondary: "#0F766E", accent: "#67E8F9", ink:"#06131c", panel:"#f1fbff" },
+    tagline: {
+      ar: "استكشاف محيطاتنا — التأهّل الوطني للسنة الثانية على التوالي.",
+      fr: "Explorer nos océans — qualifiés au National pour la 2ème année consécutive.",
+    },
+    achievements: {
+      ar: [
+        { title: "التأهّل إلى المنافسة الوطنية", note: "ثاني تأهّل متتالٍ إلى المنافسة الوطنية FLL — أداء عالٍ ومستمرّ." },
+        { title: "المركز الخامس — Robot Game (جهوي)", note: "260 نقطة في Robot Game — المركز الخامس في المنافسة الجهوية." },
+        { title: "المركز 15 من 42 وطنيًّا", note: "ترتيب 15 من بين 42 فريقًا وطنيًّا (لائحة الانتظار) — حضور قويّ بين أبرز فرق FLL في المغرب." },
+      ],
+      fr: [
+        { title: "Qualifiés à la Compétition Nationale", note: "Deuxième qualification consécutive à la Compétition Nationale FLL — performance soutenue à haut niveau." },
+        { title: "5ème — Jeu du Robot (Régional)", note: "260 points au Jeu du Robot — 5ème place à la compétition régionale." },
+        { title: "15ème sur 42 au National", note: "Classement 15ème sur 42 équipes (liste d'attente) — belle impression parmi les meilleures équipes FLL du Maroc." },
+      ],
+    },
+    robot: { name: "NassBOT" },
+    project: {
+      ar: { title: "Open Ocean — أسطول من الروبوتات العائمة الحاملة للحسّاسات" },
+      fr: { title: "Open Ocean — une flotte de robots flottants à capteurs" },
+    },
+  },
+  {
+    id: "unearthed",
+    name: "UNEARTHED",
+    years: "2025 — 2026",
+    theme: { primary: "#D97706", secondary: "#78350F", accent: "#FCD9A8", ink:"#1f1208", panel:"#fff8ef" },
+    tagline: {
+      ar: "نحفر في الماضي — موسمنا الحالي في FIRST LEGO League.",
+      fr: "Plonger dans le passé — notre saison FIRST LEGO League en cours.",
+    },
+    achievements: {
+      ar: [
+        { title: "🥉 المركز الثالث — Robot Game (جهوي)", note: "360 نقطة في Robot Game — المركز الثالث في المنافسة الجهوية.", highlight: true },
+        { title: "🏆 جائزة Coach Mentor (وطني)", note: "جائزة Coach Mentor في المنافسة الوطنية — تقديرًا لجودة تأطير فريق Tech Crew.", highlight: true },
+      ],
+      fr: [
+        { title: "🥉 3ème — Jeu du Robot (Régional)", note: "360 points au Jeu du Robot — 3ème place à la compétition régionale.", highlight: true },
+        { title: "🏆 Prix Coach Mentor (National)", note: "Prix Coach Mentor décerné à la Compétition Nationale — reconnaissance de la qualité de l'encadrement de Tech Crew.", highlight: true },
+      ],
+    },
+    robot: { name: "TODO: Robot Name" },
+    project: {
+      ar: { title: "ArtiVault — كبسولة ذكية للقطع الأثرية الهشّة" },
+      fr: { title: "ArtiVault — une capsule intelligente pour artefacts fragiles" },
+    },
+  },
+];
+
+/* ================================================================== */
+/*  SEASON_MEDIA — single source of truth for which assets each season  */
+/*  uses. Supports a mix of images (.jpg) and looping videos (.mp4).    */
+/* ================================================================== */
+const SEASON_MEDIA = {
+  superpowered: {
+    team:    { type: "image", src: `./public/images/superpowered/main.jpg`, label: "Tech Crew · SUPERPOWERED" },
+    robots: [
+      { type: "image", src: `./public/images/superpowered/robot1.jpg`, label: "الروبوت — لقطة كاملة",  span: "col-span-6", aspect: "aspect-[16/10]", shadow: true },
+      { type: "image", src: `./public/images/superpowered/robot2.jpg`, label: "الروبوت — تفصيل",        span: "col-span-3", aspect: "aspect-[4/3]"  },
+      { type: "image", src: `./public/images/superpowered/robot3.jpg`, label: "الروبوت — الهيكل",       span: "col-span-3", aspect: "aspect-[4/3]"  },
+    ],
+    projects: [
+      { type: "image", src: `./public/images/superpowered/project1.jpg`, label: "المشروع — لقطة",  span: "col-span-6", aspect: "aspect-[16/9]", shadow: true },
+      { type: "image", src: `./public/images/superpowered/project2.jpg`, label: "المشروع — تفصيل", span: "col-span-3", aspect: "aspect-[4/3]" },
+      { type: "image", src: `./public/images/superpowered/project3.jpg`, label: "المشروع — تجربة", span: "col-span-3", aspect: "aspect-[4/3]" },
+    ],
+  },
+  masterpiece: {
+    team: {
+      type: "slideshow",
+      interval: 7000,
+      label: "Tech Crew · MASTERPIECE",
+      frames: [
+        { src: `./public/images/masterpiece/main1.jpg`, label: "Tech Crew · MASTERPIECE · 1" },
+        { src: `./public/images/masterpiece/main2.jpg`, label: "Tech Crew · MASTERPIECE · 2" },
+        { src: `./public/images/masterpiece/main3.jpg`, label: "Tech Crew · MASTERPIECE · 3" },
+      ],
+    },
+    robots: [
+      { type: "image", src: `./public/images/masterpiece/robot1.png`, label: "الروبوت — لقطة كاملة",  span: "col-span-6", aspect: "aspect-[16/10]", shadow: true },
+      { type: "image", src: `./public/images/masterpiece/robot2.jpg`, label: "الروبوت — تفصيل",        span: "col-span-3", aspect: "aspect-[4/3]"  },
+      { type: "image", src: `./public/images/masterpiece/robot3.jpg`, label: "الروبوت — الهيكل",       span: "col-span-3", aspect: "aspect-[4/3]"  },
+    ],
+    projects: [
+      { type: "image", src: `./public/images/masterpiece/project1.jpg`, label: "Backstage — المسرح المتحرّك", span: "col-span-6", aspect: "aspect-[16/9]", shadow: true },
+      { type: "image", src: `./public/images/masterpiece/project2.jpg`, label: "Backstage — تفاصيل الإلكترونيات", span: "col-span-3", aspect: "aspect-[4/3]" },
+      { type: "image", src: `./public/images/masterpiece/project3.jpg`, label: "Backstage — العرض",      span: "col-span-3", aspect: "aspect-[4/3]" },
+    ],
+  },
+  submerged: {
+    team:    { type: "image", src: `./public/images/submerged/team.jpg`, label: "team photo · submerged" },
+    robots: [
+      { type: "image", src: `./public/images/submerged/robot1.jpg`,
+        label: "NassBOT — full view",
+        span: "col-span-6", aspect: "aspect-[16/10]", shadow: true },
+      { type: "video", src: `./public/images/submerged/robot2-web.mp4`,
+        poster: `./public/images/submerged/robot2-poster.jpg`,
+        label: "NassBOT — attachment in action",
+        span: "col-span-3", aspect: "aspect-[4/3]" },
+      { type: "video", src: `./public/images/submerged/robot3-web.mp4`,
+        poster: `./public/images/submerged/robot3-poster.jpg`,
+        label: "NassBOT — mission run (vertical)",
+        span: "col-span-3", aspect: "aspect-[4/3]" },
+    ],
+    projects: [
+      { type: "image", src: `./public/images/submerged/project1.jpg`,
+        label: "Open Ocean — prototype",
+        span: "col-span-6", aspect: "aspect-[16/9]", shadow: true },
+      { type: "image", src: `./public/images/submerged/project2.jpg`,
+        label: "Open Ocean — sensor stack",
+        span: "col-span-3", aspect: "aspect-[4/3]" },
+      { type: "image", src: `./public/images/submerged/project3.jpg`,
+        label: "Open Ocean — field test",
+        span: "col-span-3", aspect: "aspect-[4/3]" },
+    ],
+  },
+  unearthed: {
+    team: {
+      type: "slideshow",
+      interval: 7000,
+      label: "Tech Crew · UNEARTHED",
+      frames: [
+        { src: `./public/images/unearthed/main1.jpg`, label: "Tech Crew · UNEARTHED · 1" },
+        { src: `./public/images/unearthed/main2.jpg`, label: "Tech Crew · UNEARTHED · 2" },
+        { src: `./public/images/unearthed/main3.jpg`, label: "Tech Crew · UNEARTHED · 3" },
+      ],
+    },
+    robots: [
+      { type: "image", src: `./public/images/unearthed/robot1.jpg`,
+        label: "Robot — full view",
+        span: "col-span-6", aspect: "aspect-[16/10]", shadow: true },
+      { type: "video", src: `./public/images/unearthed/robot2-web.mp4`,
+        poster: `./public/images/unearthed/robot2-poster.jpg`,
+        label: "Robot — attachment in action",
+        span: "col-span-3", aspect: "aspect-[4/3]" },
+      { type: "video", src: `./public/images/unearthed/robot3-web.mp4`,
+        poster: `./public/images/unearthed/robot3-poster.jpg`,
+        label: "Robot — mission run (vertical)",
+        span: "col-span-3", aspect: "aspect-[4/3]" },
+    ],
+    projects: [
+      { type: "image", src: `./public/images/unearthed/project1.jpg`,
+        label: "ArtiVault — prototype capsule",
+        span: "col-span-6", aspect: "aspect-[16/9]", shadow: true },
+      { type: "image", src: `./public/images/unearthed/project2.jpg`,
+        label: "ArtiVault — sensor / Peltier detail",
+        span: "col-span-3", aspect: "aspect-[4/3]" },
+      { type: "image", src: `./public/images/unearthed/project3.jpg`,
+        label: "ArtiVault — field test",
+        span: "col-span-3", aspect: "aspect-[4/3]" },
+    ],
+  },
+};
+
+/* Detailed Robot / Project copy — left as clearly-marked TODOs so the coach knows
+   exactly what to replace. */
+const ROBOT_COPY = {
+  ar: {
+    superpowered: {
+      strategy:    "للملء: صف استراتيجية تشغيل الروبوت هذا الموسم (عدد الجولات، تغطية الطاولة، استخدام الحسّاسات...).",
+      attachments: ["للملء: الأداة 1", "للملء: الأداة 2", "للملء: الأداة 3"],
+      programming: "للملء: صف منهج البرمجة المتّبع (كتل / Python، منطق الحسّاسات، تتبّع الخطوط...).",
+      missions:    "للملء: اذكر المهمّات التي أنجزها الروبوت بشكل ثابت في الجهوي.",
+    },
+    masterpiece: {
+      strategy:    "جولتان من حوالي 2:30 لكلّ دورة. الأولى تجمع المهمّات السهلة والمضمونة في مقدّمة الطاولة، والثانية تتّجه إلى المهمّات الأعلى نقاطًا مع تبديل سريع للملحقات.",
+      attachments: [
+        "ذراع دفع أمامية للمهمّات القريبة من منطقة الانطلاق",
+        "خطّاف لرفع القطع الفنية وتركيبها",
+        "ملحق سريع التبديل للمهمّات الدقيقة",
+      ],
+      programming: "كود الكتل في SPIKE Prime مع مكتبة أوامر مخصّصة، والبرنامج نفسه يُشغّل الروبوت من أيّ منطقة انطلاق. حسّاسان للألوان لتتبّع الخطوط، وجيروسكوب للحفاظ على الاتجاهات.",
+      missions:    "280 نقطة بشكل ثابت عبر مباريات الموسم — أداء قويّ رافق تأهّل الفريق إلى المنافسة الوطنية بابن جرير.",
+    },
+    submerged: {
+      strategy:    "ينفّذ NassBOT جولتَين من حوالي 2:30 لكلّ دورة. الجولة الأولى تخصَّص للمهمّات ذات النقاط العالية والمخاطر المنخفضة في الجزء الأمامي من الطاولة — نقاطٌ سهلة تُحسم مبكّرًا. أمّا الثانية فتتجه إلى المهمّات الأصعب، وتستفيد من الأدوات سريعة التبديل لربط ثلاث مهمّات دقيقة في أقلّ من 45 ثانية.",
+      attachments: [
+        "مغرفة أمامية للمهمّات المتعلّقة بالقرش والاسترجاع من قاع المحيط",
+        "ذراع بخطّاف جانبي لمهمّات Kraken وحطام السفن",
+        "رافعة تروسية سريعة التبديل لمهمّة إعادة إنبات الشُّعَب المرجانية",
+      ],
+      programming: "مكتوب بلغة الكتل في بيئة SPIKE Prime مع مكتبة أوامر مخصّصة، فالبرنامج نفسه يُشغّل الروبوت من أيّ منطقة انطلاق. حسّاسان للألوان يُحافظان على الروبوت فوق خطوط الطاولة، وجيروسكوب يضبط الاتجاهات في حدود ±2° حتى بعد الاحتكاكات الخفيفة.",
+      missions:    "260 نقطة بشكل ثابت عبر مباريات الجهة — يكفي لانتزاع المركز الخامس في Robot Game وثاني تأهّل متتالٍ إلى المنافسة الوطنية.",
+    },
+    unearthed: {
+      strategy:    "جولتان من حوالي 2:30 لكلّ دورة. الأولى تركّز على مهمّات استرجاع القطع الأثرية وشبكة الحفر في الجزء الأمامي من الطاولة — نقاط عالية ومخاطر محدودة. والثانية تتولّى مهمّات الحفر والتخزين الأثقل، وتربط مهمّتين دقيقتين في الأربعين ثانية الأخيرة.",
+      attachments: [
+        "ماسك ناعم (مبطّن بالإسفنج) للمهمّات على القطع الهشّة",
+        "أداة تنظيف بالفرشاة لشبكة الحفر",
+        "ذراع تلسكوبية لمهمّة التخزين في الرفّ العالي",
+      ],
+      programming: "كود الكتل في SPIKE Prime مع مكتبة أوامر مخصّصة — البرنامج نفسه يُشغّل الروبوت من أيّ منطقة انطلاق. حسّاسان للألوان لتتبّع خطوط الطاولة، وجيروسكوب للحفاظ على الاتجاهات في حدود ±2° حتى بعد الاحتكاكات.",
+      missions:    "360 نقطة بشكل ثابت عبر مباريات الجهة — يكفي لانتزاع المركز الثالث في Robot Game.",
+    },
+  },
+  fr: {
+    superpowered: {
+      strategy:    "À COMPLÉTER : décrivez la stratégie de runs du robot cette saison.",
+      attachments: ["À COMPLÉTER : Accessoire 1", "À COMPLÉTER : Accessoire 2", "À COMPLÉTER : Accessoire 3"],
+      programming: "À COMPLÉTER : décrivez l'approche de programmation (block-based / Python, capteurs, etc.).",
+      missions:    "À COMPLÉTER : listez les missions accomplies de manière fiable en régional.",
+    },
+    masterpiece: {
+      strategy:    "Deux runs d'environ 2:30 par tour. Le premier regroupe les missions faciles et sûres à l'avant de la table, le second vise les missions à plus forte valeur avec un changement rapide d'accessoires.",
+      attachments: [
+        "Bras-poussoir avant pour les missions proches de la zone de lancement",
+        "Crochet pour soulever et placer les pièces artistiques",
+        "Accessoire à changement rapide pour les missions de précision",
+      ],
+      programming: "Code bloc SPIKE Prime avec une petite bibliothèque d'actions maison ; le même programme pilote le robot depuis les deux zones de lancement. Deux capteurs couleur suivent les lignes, et le gyroscope maintient les caps.",
+      missions:    "Score fiable de 280 points sur les matchs de la saison — une performance solide qui a accompagné la qualification au National à Ben Guerir.",
+    },
+    submerged: {
+      strategy:    "NassBOT effectue deux runs d'environ 2:30 par tour. Le premier sécurise les missions à forte valeur et faible risque sur l'avant de la table — des points faciles encaissés tôt. Le second vise les missions plus risquées et enchaîne trois tâches de précision en moins de 45 secondes grâce aux accessoires à changement rapide.",
+      attachments: [
+        "Pelle passive avant pour les missions requin / récupération au fond",
+        "Bras-crochet latéral pour les missions kraken et artefacts d'épave",
+        "Levier à engrenages à changement rapide pour la mission régénération du corail",
+      ],
+      programming: "Codé dans l'environnement bloc SPIKE Prime avec une petite bibliothèque d'actions maison : le même programme pilote le robot depuis les deux zones de lancement. Deux capteurs couleur maintiennent le châssis sur les lignes, et un gyroscope garde les caps à ±2° même après une légère collision.",
+      missions:    "Score fiable de 260 points lors des matchs du Régional — suffisant pour une 5ème place au Jeu du Robot et une deuxième qualification consécutive à la Compétition Nationale.",
+    },
+    unearthed: {
+      strategy:    "Deux runs d'environ 2:30 par tour. Le premier se concentre sur les missions de récupération d'artefacts et la grille de fouille à l'avant de la table — points élevés, risque faible. Le second prend les missions de fouille et de stockage plus lourdes et enchaîne deux tâches de précision dans les 40 dernières secondes.",
+      attachments: [
+        "Pince douce à artefacts (gainée mousse) pour les missions sur reliques fragiles",
+        "Accessoire brosse-balai pour la grille de fouille",
+        "Bras télescopique pour la mission de stockage en hauteur",
+      ],
+      programming: "Code bloc SPIKE Prime avec une petite bibliothèque d'actions maison — le même programme pilote le robot depuis les deux zones de lancement. Deux capteurs couleur suivent les lignes, et le gyroscope garde les caps à ±2° même après une collision.",
+      missions:    "Score fiable de 360 points lors des matchs du Régional — suffisant pour une 3ème place au Jeu du Robot.",
+    },
+  },
+};
+
+const PROJECT_COPY = {
+  ar: {
+    superpowered: {
+      problem:  "للملء: صف المشكلة التي حدّدها مشروع الابتكار (محور الطاقة).",
+      solution: "للملء: صف الحلّ المبتكر للفريق ونموذجه الأوّلي.",
+      impact:   "للملء: صف الأثر / من سيستفيد.",
+    },
+    masterpiece: {
+      problem:  "يحتفي موسم MASTERPIECE بالفنون وبمتعة الأداء على الخشبة — لكنّ الكثيرين يمنعهم خوفُ التحدّث أمام الجمهور ورهبةُ المسرح من المشاركة. تلاميذ موهوبون يتجمّدون أمام الحضور، وأصواتٌ خجولة لا تُسمَع أبدًا.",
+      solution: "صنعنا مسرح عرائس صغيرًا متحرّكًا: شخصيتان فوق خشبة مزيّنة تتحرّكان بمحرّكات يتحكّم فيها Arduino، وضوء LED يُضيء الشخصية التي «تتكلّم» في حينها. يبقى المؤدّي خلف الكواليس ويكتفي بإعارة صوته للشخصيات — فيستطيع كلّ من يخشى الظهور أن يؤدّي ويروي ويتمرّن على التحدّث من وراء الستار. كسونا الخشبة بقماش أحمر وخلفية مرسومة لإضفاء أجواء مسرح حقيقي.",
+      impact:   "أداة بسيطة الكلفة لبناء الثقة داخل الأقسام ولدى المؤدّين الخجولين — تتيح للتلاميذ التمرّن على التعبير والتحدّث أمام الجمهور من خلف الستار، إلى أن يصبحوا مستعدّين للوقوف في المقدّمة.",
+    },
+    submerged: {
+      problem:  "أكثر من 80% من محيطاتنا لا تزال بِكرًا. الباحثون والغطّاسون والساكنة الساحلية لا يتوفّرون على بيانات لحظية مستمرّة حول جودة الماء والتلوّث — وسفن البحث القليلة المتاحة لا تُغطّي إلّا مساحات ضئيلة في كلّ مرّة. يبقى أغلب المحيط نقطةً عمياء.",
+      solution: "Open Ocean عوّامة ذاتية الحركة تحمل حسّاسات pH والحرارة والعكورة وGPS، إلى جانب كاميرا صغيرة ونموذج ذكاء اصطناعي يكتشف البلاستيك الطافي لحظيًّا. تُرسَل القراءات كلّ بضع دقائق إلى لوحة عرض عمومية عبر شبكة 4G. منخفضة الكلفة، قابلة للنشر بالعشرات.",
+      impact:   "بيانات وعتاد مفتوحَا المصدر يحوّلان مراقبة المحيطات إلى موردٍ مجتمعيّ. يحصل الباحثون على بيانات مرجعية كثيفة، ويتلقّى الغطّاسون تنبيهات تلوّث قبل النزول إلى الماء، ويمكن للسلطات المحلية التحرّك تجاه نقاط تراكم البلاستيك في ساعات بدل أسابيع.",
+    },
+    unearthed: {
+      problem:  "يتعامل علماء الآثار في الميدان مع قطع هشّة — فخّار، بقايا عضوية، معادن — تبدأ بالتدهور في اللحظة التي تغادر فيها شروط دفنها. حرارة غير ملائمة، رطوبة غير ملائمة، صدمة، أو تعرّض مفاجئ للأكسجين قد يُتلف اكتشافًا في ساعات. ومع ذلك، لا تزال أغلب الحفريات تنقل القطع في علب بلاستيكية بسيطة دون أيّ تحكّم بيئي.",
+      solution: "ArtiVault كبسولة ذكية محمولة تحمي القطع الأثرية من موقع الحفر إلى المختبر. حسّاسات داخلية تتابع الحرارة والرطوبة لحظيًّا؛ وحدة Peltier تُسخّن أو تُبرّد حسب نوع القطعة؛ مرطّب داخلي وجلّ سيليكا يضبطان الرطوبة؛ قفل NFC لا يفتح إلّا للمُكلَّفين ويُطلق تنبيهًا عند أيّ محاولة فتح بالقوّة. العلبة من زجاج عازل مقاوم للصدمات، مبطّنة بالفلّين لامتصاص الصدمات، وصُمّمت على شكل حقيبة ظهر يمكن حملها سيرًا على الأقدام.",
+      impact:   "حفظ بمستوى ميداني يدخل في حقيبة ظهر — يُمكِّن المتاحف الصغيرة والجامعات وهواة علم الآثار من حماية القطع النادرة منذ لحظة اكتشافها، بدل فقدانها في النقل.",
+    },
+  },
+  fr: {
+    superpowered: {
+      problem:  "À COMPLÉTER : décrivez le problème identifié par votre projet (thématique énergie).",
+      solution: "À COMPLÉTER : décrivez la solution innovante de l'équipe et son prototype.",
+      impact:   "À COMPLÉTER : décrivez l'impact / les bénéficiaires.",
+    },
+    masterpiece: {
+      problem:  "La saison MASTERPIECE célèbre les arts et le plaisir de monter sur scène — mais beaucoup en sont empêchés par le trac et la peur de parler en public. Des élèves talentueux se figent devant un auditoire, et des voix timides ne se font jamais entendre.",
+      solution: "Nous avons construit un petit théâtre de marionnettes animé : deux personnages sur une scène décorée bougent grâce à des moteurs pilotés par Arduino, et une LED éclaire le personnage qui « parle ». L'interprète reste en coulisses et prête simplement sa voix aux personnages — ainsi, toute personne intimidée par le regard des autres peut jouer, raconter et s'entraîner à parler en public derrière le rideau. Nous avons habillé la scène d'un tissu rouge et d'un décor peint pour une vraie ambiance de théâtre.",
+      impact:   "Un outil de confiance peu coûteux pour les classes et les interprètes timides — il permet aux élèves de s'entraîner à l'expression et à la prise de parole depuis les coulisses, jusqu'à être prêts à passer devant.",
+    },
+    submerged: {
+      problem:  "Plus de 80% des océans restent inexplorés. Chercheurs, plongeurs et communautés littorales manquent de données continues sur la qualité de l'eau — les rares navires de recherche ne couvrent que de minuscules zones. L'essentiel de l'océan reste un angle mort.",
+      solution: "Open Ocean est une bouée flottante autonome avec capteurs pH, température, turbidité, GPS, et une petite caméra + IA qui détecte le plastique en temps réel. Les mesures sont envoyées toutes les quelques minutes en 4G vers un tableau de bord public. Low-cost, déployable par dizaines.",
+      impact:   "Données et hardware open-source : les chercheurs obtiennent des données denses, les plongeurs reçoivent des alertes pollution avant d'aller dans l'eau, et les autorités locales peuvent réagir aux pics de plastique en heures plutôt qu'en semaines.",
+    },
+    unearthed: {
+      problem:  "Les archéologues manipulent des artefacts fragiles — poteries, restes organiques, métal — qui commencent à se dégrader dès qu'ils quittent leurs conditions d'enfouissement. Une mauvaise température, une mauvaise humidité, un choc ou une exposition soudaine à l'oxygène peuvent ruiner une découverte en quelques heures. Pourtant, sur la plupart des fouilles, les artefacts voyagent encore dans de simples boîtes en plastique sans aucun contrôle.",
+      solution: "ArtiVault est une capsule portable intelligente qui protège les artefacts du chantier au labo. Des capteurs internes suivent la température et l'humidité en temps réel ; un module Peltier chauffe ou refroidit selon le type d'artefact ; un humidificateur et du gel de silice ajustent l'humidité ; un verrou NFC ne s'ouvre que pour les manipulateurs autorisés et déclenche une alerte en cas de forçage. La caisse est en verre isolant incassable, doublée de liège pour absorber les chocs, et conçue en sac à dos pour voyager à pied partout.",
+      impact:   "Une conservation niveau labo qui tient dans un sac à dos — permettant à de petits musées, universités et archéologues amateurs de protéger des trouvailles rares dès la découverte, plutôt que de les perdre en transit.",
+    },
+  },
+};
+
+/* ================================================================== */
+/*  Coaches & members — keyed by season since rosters change yearly    */
+/* ================================================================== */
+const SUBMERGED_COACHES = [
+  { name: "Abderrazzak El Ouardy", roleAR: "المؤطّر الرئيسي", roleFR: "Coach principal", gender: "m",
+    email: "abduelouardy@gmail.com",   phone: "0618604127", phoneIntl: "+212 618 60 41 27" },
+  { name: "Lahcen Khaddaoui",      roleAR: "المؤطّر المساعد", roleFR: "Co-Coach",        gender: "m",
+    email: "lahcenkhddaoui@gmail.com", phone: "0615672066", phoneIntl: "+212 615 67 20 66" },
+];
+
+const TODO_COACHES = [
+  { name: "TODO: Coach 1 name",     roleAR: "المؤطّر الرئيسي", roleFR: "Coach principal", gender: "m",
+    email: "todo@example.com", phone: "TODO", phoneIntl: "TODO" },
+  { name: "TODO: Coach 2 name",     roleAR: "المؤطّر المساعد", roleFR: "Co-Coach",        gender: "m",
+    email: "todo@example.com", phone: "TODO", phoneIntl: "TODO" },
+];
+
+const UNEARTHED_COACHES = [
+  { name: "Lahcen Khaddaoui",   roleAR: "المؤطّر الرئيسي", roleFR: "Coach principal", gender: "m",
+    email: "lahcenkhddaoui@gmail.com", phone: "0615672066", phoneIntl: "+212 615 67 20 66" },
+  { name: "Fatiha Ait El Kadi", roleAR: "المؤطّرة المساعدة", roleFR: "Co-Coach",        gender: "f",
+    email: "fa.aitelkadi@gmail.com",   phone: "0603835026", phoneIntl: "+212 603 83 50 26" },
+];
+
+const MASTERPIECE_COACHES = [
+  { name: "Mohamed Ajguernoun",    roleAR: "المؤطّر الرئيسي", roleFR: "Coach principal", gender: "m",
+    email: "todo@example.com", phone: "TODO", phoneIntl: "TODO" },
+  { name: "Abderrazzak El Ouardy", roleAR: "المؤطّر المساعد", roleFR: "Co-Coach",        gender: "m",
+    email: "abduelouardy@gmail.com", phone: "0618604127", phoneIntl: "+212 618 60 41 27" },
+];
+
+const SUPERPOWERED_COACHES = [
+  { name: "Mohamed Ajguernoun", roleAR: "المؤطّر الرئيسي",  roleFR: "Coach principal", gender: "m",
+    email: "todo@example.com", phone: "TODO", phoneIntl: "TODO" },
+  { name: "Siham El Morid",     roleAR: "المؤطّرة المساعدة", roleFR: "Co-Coach",        gender: "f",
+    email: "todo@example.com", phone: "TODO", phoneIntl: "TODO" },
+];
+
+const SEASON_COACHES = {
+  superpowered: SUPERPOWERED_COACHES,
+  masterpiece:  MASTERPIECE_COACHES,
+  submerged:    SUBMERGED_COACHES,
+  unearthed:    UNEARTHED_COACHES,
+};
+
+/* 10 students for SUBMERGED season — split: 3 Robot Game, 7 Innovation Project. */
+const SUBMERGED_TEAM = [
+  // Robot Game team (3)
+  { name: "Mohamed Nasser Ifri", roleAR: "مسؤول البرمجة",       roleFR: "Programmation principale", group: "robot",   gender: "m", real: true },
+  { name: "Khadija Alhyane",     roleAR: "بناء الروبوت",        roleFR: "Construction du robot",    group: "robot",   gender: "f", real: true },
+  { name: "Mona Hamawi",         roleAR: "قيادة الروبوت",       roleFR: "Pilote du robot",          group: "robot",   gender: "f", real: true },
+  // Innovation Project team (7)
+  { name: "Aya Aboumalik",       roleAR: "البحث في المشروع",    roleFR: "Recherche projet",         group: "project", gender: "f", real: true },
+  { name: "Lamia El Youssfi",    roleAR: "المُقدِّمة الرئيسية",   roleFR: "Présentation principale",  group: "project", gender: "f", real: true },
+  { name: "Houda Abram",         roleAR: "تصميم النموذج",       roleFR: "Conception prototype",     group: "project", gender: "f", real: true },
+  { name: "Meryem Ait Mansour",  roleAR: "المقابلات الميدانية", roleFR: "Entretiens terrain",       group: "project", gender: "f", real: true },
+  { name: "Yassmine Ajbour",     roleAR: "تنسيق المشروع",       roleFR: "Coordination projet",      group: "project", gender: "f", real: true },
+  { name: "Youssef Ouaziz",      roleAR: "مسؤول العتاد",        roleFR: "Responsable hardware",     group: "project", gender: "m", real: true },
+  { name: "Hiba Erradawi",       roleAR: "التواصل والتحسيس",    roleFR: "Communication & sensibilisation", group: "project", gender: "f", real: true },
+];
+
+/* Placeholder roster used for any season the user hasn't filled in yet. */
+const TODO_TEAM = [
+  { name: "TODO: Student 1", roleAR: "مسؤول البرمجة",       roleFR: "Programmation principale", group: "robot",   gender: "f" },
+  { name: "TODO: Student 2", roleAR: "بناء الروبوت",        roleFR: "Construction du robot",    group: "robot",   gender: "m" },
+  { name: "TODO: Student 3", roleAR: "قيادة الروبوت",       roleFR: "Pilote du robot",          group: "robot",   gender: "f" },
+  { name: "TODO: Student 4", roleAR: "البحث في المشروع",    roleFR: "Recherche projet",         group: "project", gender: "f" },
+  { name: "TODO: Student 5", roleAR: "تصميم النموذج",       roleFR: "Conception prototype",     group: "project", gender: "f" },
+  { name: "TODO: Student 6", roleAR: "المُقدِّم الرئيسي",      roleFR: "Présentation principale",  group: "project", gender: "f" },
+];
+
+/* 8 students for UNEARTHED season — split: 3 Robot Game, 5 Innovation Project. */
+const UNEARTHED_TEAM = [
+  // Robot Game (3)
+  { name: "Mohamed Nasser Ifri", roleAR: "مسؤول البرمجة",       roleFR: "Programmation principale", group: "robot",   gender: "m", real: true },
+  { name: "Khadija Oussamt",     roleAR: "بناء الروبوت",        roleFR: "Construction du robot",    group: "robot",   gender: "f", real: true },
+  { name: "Ishaq Mafamane",      roleAR: "قيادة الروبوت",       roleFR: "Pilote du robot",          group: "robot",   gender: "m", real: true },
+  // Innovation Project (5)
+  { name: "Aya Abou Malik",      roleAR: "البحث في المشروع",    roleFR: "Recherche projet",         group: "project", gender: "f", real: true },
+  { name: "Yassmine Badou",      roleAR: "المُقدِّمة الرئيسية",   roleFR: "Présentation principale",  group: "project", gender: "f", real: true },
+  { name: "Asmae Ait Abram",     roleAR: "تصميم النموذج",       roleFR: "Conception prototype",     group: "project", gender: "f", real: true },
+  { name: "Ikram Ouchou",        roleAR: "المقابلات الميدانية", roleFR: "Entretiens terrain",       group: "project", gender: "f", real: true },
+  { name: "Ilham Tigrnit",       roleAR: "تنسيق المشروع",       roleFR: "Coordination projet",      group: "project", gender: "f", real: true },
+];
+
+/* 8 students for SUPERPOWERED (3 boys, 5 girls) — names to be added by the coach. */
+const SUPERPOWERED_TEAM = [
+  // Robot Game (3)
+  { name: "TODO: عضو 1", roleAR: "مسؤول البرمجة",      roleFR: "Programmation principale", group: "robot",   gender: "m" },
+  { name: "TODO: عضو 2", roleAR: "بناء الروبوت",       roleFR: "Construction du robot",    group: "robot",   gender: "f" },
+  { name: "TODO: عضو 3", roleAR: "قيادة الروبوت",      roleFR: "Pilote du robot",          group: "robot",   gender: "f" },
+  // Innovation Project (5)
+  { name: "TODO: عضو 4", roleAR: "البحث في المشروع",   roleFR: "Recherche projet",         group: "project", gender: "m" },
+  { name: "TODO: عضو 5", roleAR: "المُقدِّمة الرئيسية",  roleFR: "Présentation principale",  group: "project", gender: "f" },
+  { name: "TODO: عضو 6", roleAR: "تصميم النموذج",      roleFR: "Conception prototype",     group: "project", gender: "f" },
+  { name: "TODO: عضو 7", roleAR: "تنسيق المشروع",      roleFR: "Coordination projet",      group: "project", gender: "m" },
+  { name: "TODO: عضو 8", roleAR: "التواصل والتحسيس",   roleFR: "Communication & sensibilisation", group: "project", gender: "f" },
+];
+
+/* 10 students for MASTERPIECE (3 boys, 7 girls) — names to be added by the coach. */
+const MASTERPIECE_TEAM = [
+  // Robot Game (3)
+  { name: "TODO: عضو 1",  roleAR: "مسؤول البرمجة",          roleFR: "Programmation principale", group: "robot",   gender: "m" },
+  { name: "TODO: عضو 2",  roleAR: "بناء الروبوت",           roleFR: "Construction du robot",    group: "robot",   gender: "f" },
+  { name: "TODO: عضو 3",  roleAR: "قيادة الروبوت",          roleFR: "Pilote du robot",          group: "robot",   gender: "f" },
+  // Innovation Project (7)
+  { name: "TODO: عضو 4",  roleAR: "الإلكترونيات (Arduino)", roleFR: "Électronique (Arduino)",   group: "project", gender: "m" },
+  { name: "TODO: عضو 5",  roleAR: "المُقدِّمة الرئيسية",      roleFR: "Présentation principale",  group: "project", gender: "f" },
+  { name: "TODO: عضو 6",  roleAR: "تصميم الخشبة والديكور",  roleFR: "Scène & décor",            group: "project", gender: "f" },
+  { name: "TODO: عضو 7",  roleAR: "البحث في المشروع",       roleFR: "Recherche projet",         group: "project", gender: "m" },
+  { name: "TODO: عضو 8",  roleAR: "المقابلات الميدانية",    roleFR: "Entretiens terrain",       group: "project", gender: "f" },
+  { name: "TODO: عضو 9",  roleAR: "تنسيق المشروع",          roleFR: "Coordination projet",      group: "project", gender: "f" },
+  { name: "TODO: عضو 10", roleAR: "التواصل والتحسيس",       roleFR: "Communication & sensibilisation", group: "project", gender: "f" },
+];
+
+const SEASON_TEAMS = {
+  superpowered: SUPERPOWERED_TEAM,
+  masterpiece:  MASTERPIECE_TEAM,
+  submerged:    SUBMERGED_TEAM,
+  unearthed:    UNEARTHED_TEAM,
+};
+
+/* Sponsor tiers — leave one slot per tier for the coach to fill.
+   Each entry: { name, url } where url can be "" for placeholder. */
+/* Flat sponsor list — add partners one by one.
+   Each: { name, url } — url can be "" for a non-clickable logo. */
+const SPONSORS = [
+  { name: "TODO: شريك 1", url: "" },
+  { name: "TODO: شريك 2", url: "" },
+  { name: "TODO: شريك 3", url: "" },
+  { name: "TODO: شريك 4", url: "" },
+];
+
+/* ================================================================== */
+/*  Atoms                                                              */
+/* ================================================================== */
+function Logo({ theme, size=50 }){
+  return (
+    <div
+      className="logo-anim rounded-2xl grid place-items-center font-display font-bold shrink-0 overflow-hidden"
+      style={{
+        width: size, height: size,
+        background: "white",
+        boxShadow: `0 0 0 2px ${theme.ink}`,
+        fontSize: size*0.32, color: theme.ink,
+      }}
+      aria-label="Tech Crew logo"
+    >
+      <img
+        src="./public/images/logo-sm.png"
+        alt="Tech Crew"
+        style={{ width: "100%", height: "100%", objectFit: "contain" }}
+        onError={(e) => {
+          e.currentTarget.style.display = "none";
+          e.currentTarget.nextSibling.style.display = "grid";
+        }}
+      />
+      <span style={{ display: "none", width:"100%", height:"100%", placeItems:"center" }}>TC</span>
+    </div>
+  );
+}
+
+function Pill({ children, theme, filled }){
+  return (
+    <span
+      className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border"
+      style={{
+        background: filled ? theme.primary : "transparent",
+        color: theme.ink,
+        borderColor: theme.ink,
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
+/* Inline SVG placeholder used when an image file doesn't exist yet */
+function PlaceholderSVG({ w, h, label, theme }){
+  const id = `p-${Math.random().toString(36).slice(2,8)}`;
+  const stripeA = theme.primary;
+  const stripeB = `color-mix(in oklab, ${theme.primary} 35%, white)`;
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="xMidYMid slice" className="w-full h-full block">
+      <defs>
+        <pattern id={id} width="24" height="24" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <rect width="24" height="24" fill={stripeA}/>
+          <rect width="12" height="24" fill={stripeB}/>
+        </pattern>
+      </defs>
+      <rect width={w} height={h} fill={`url(#${id})`} />
+      <rect width={w} height={h} fill={theme.ink} opacity=".08"/>
+      <g>
+        <rect x="16" y={h-44} width={label.length * 8 + 24} height="28" fill={theme.ink} rx="6"/>
+        <text x="28" y={h-25} fontFamily="ui-monospace, Menlo, monospace" fontSize="13" fill={theme.panel} letterSpacing=".06em">
+          {label}
+        </text>
+      </g>
+    </svg>
+  );
+}
+
+/* SmartImg — tries the given path first, falls back to a themed placeholder.
+   The moment the coach drops a real file at the expected path, it shows up. */
+function SmartImg({ src, w, h, label, theme, onClick, alt }){
+  const [failed, setFailed] = useState(false);
+  useEffect(() => { setFailed(false); }, [src]);
+  if (!src || failed) {
+    return (
+      <div className={onClick ? "cursor-pointer w-full h-full" : "w-full h-full"} onClick={onClick}>
+        <PlaceholderSVG w={w} h={h} label={label} theme={theme}/>
+      </div>
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={alt || label}
+      className="w-full h-full object-cover block"
+      style={{ cursor: onClick ? "zoom-in" : "default" }}
+      onError={() => setFailed(true)}
+      onClick={onClick}
+    />
+  );
+}
+
+/* SmartMedia — renders an image, or a hover-to-play muted-loop video. */
+function SmartMedia({ item, w, h, theme, onClick }){
+  const [failed, setFailed] = useState(false);
+  const videoRef = useRef(null);
+  useEffect(() => { setFailed(false); }, [item && item.src]);
+
+  if (!item || !item.src || failed) {
+    return (
+      <div className={onClick ? "cursor-pointer w-full h-full" : "w-full h-full"} onClick={onClick}>
+        <PlaceholderSVG w={w} h={h} label={(item && item.label) || ""} theme={theme}/>
+      </div>
+    );
+  }
+
+  if (item.type === "video") {
+    const playFromStart = () => {
+      const v = videoRef.current;
+      if (!v) return;
+      try { v.currentTime = 0; } catch (e) {}
+      const p = v.play();
+      if (p && p.catch) p.catch(() => {});
+    };
+    const pauseAndReset = () => {
+      const v = videoRef.current;
+      if (!v) return;
+      v.pause();
+      try { v.currentTime = 0; } catch (e) {}
+    };
+    return (
+      <video
+        ref={videoRef}
+        src={item.src}
+        poster={item.poster}
+        muted loop playsInline
+        preload="metadata"
+        className="w-full h-full object-cover block"
+        style={{ cursor: onClick ? "zoom-in" : "default" }}
+        onError={() => setFailed(true)}
+        onClick={onClick}
+        onMouseEnter={playFromStart}
+        onMouseLeave={pauseAndReset}
+        aria-label={item.label}
+      />
+    );
+  }
+
+  return (
+    <img
+      src={item.src}
+      alt={item.label}
+      className="w-full h-full object-cover block"
+      style={{ cursor: onClick ? "zoom-in" : "default" }}
+      onError={() => setFailed(true)}
+      onClick={onClick}
+    />
+  );
+}
+
+function TrophyIcon({ color, size=28 }){
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M8 21h8"/><path d="M12 17v4"/>
+      <path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/>
+      <path d="M17 5h3v3a3 3 0 0 1-3 3"/><path d="M7 5H4v3a3 3 0 0 0 3 3"/>
+    </svg>
+  );
+}
+
+function MedalIcon({ color, size=28 }){
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M8 4l4 7 4-7"/><circle cx="12" cy="15" r="6"/>
+    </svg>
+  );
+}
+
+/* used for achievements that are rankings / results (no physical trophy) */
+function CheckIcon({ color, size=28 }){
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/>
+    </svg>
+  );
+}
+
+function FacebookIcon({ color, size=18 }){
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill={color}><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 4.97 3.66 9.1 8.44 9.94v-7.03H7.9v-2.9h2.54V9.85c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.9h-2.34V22c4.78-.84 8.44-4.97 8.44-9.94z"/></svg>
+  );
+}
+function InstagramIcon({ color, size=18 }){
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill={color}/></svg>
+  );
+}
+function LinkedInIcon({ color, size=18 }){
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill={color}><path d="M4.98 3.5a2.5 2.5 0 1 1 .02 5.001A2.5 2.5 0 0 1 4.98 3.5zM3 9h4v12H3V9zm7 0h3.8v1.7h.05c.53-1 1.83-2.06 3.77-2.06 4.03 0 4.78 2.65 4.78 6.1V21H18v-5.4c0-1.29-.02-2.94-1.79-2.94-1.79 0-2.07 1.4-2.07 2.85V21H10V9z"/></svg>
+  );
+}
+function MailIcon({ color, size=16 }){
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3 7 12 13 21 7"/></svg>
+  );
+}
+function PhoneIcon({ color, size=16 }){
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.09 9.9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.57 2.8.7A2 2 0 0 1 22 16.92z"/></svg>
+  );
+}
+
+/* ================================================================== */
+/*  BrilliantTrophy — gold-gradient SVG cup with animated sparkles      */
+/* ================================================================== */
+function BrilliantTrophy({ size=44 }){
+  return (
+    <div className="relative grid place-items-center" style={{ width: size, height: size }}>
+      <svg viewBox="0 0 64 64" width={size*0.92} height={size*0.92} aria-hidden>
+        <defs>
+          <linearGradient id="goldA" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stopColor="#FFF3B0"/>
+            <stop offset="40%" stopColor="#FFC83F"/>
+            <stop offset="80%" stopColor="#D08410"/>
+            <stop offset="100%" stopColor="#8B5500"/>
+          </linearGradient>
+          <linearGradient id="goldB" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"  stopColor="#FFD56A"/>
+            <stop offset="100%" stopColor="#A86E0F"/>
+          </linearGradient>
+        </defs>
+        {/* cup */}
+        <path d="M18 6 L46 6 L46 24 C46 32 40 38 32 38 C24 38 18 32 18 24 Z"
+              fill="url(#goldA)" stroke="#5C3D00" strokeWidth="1.4"/>
+        {/* handles */}
+        <path d="M46 10 C 52 10, 54 14, 54 18 C 54 22, 50 26, 46 26"
+              fill="none" stroke="#5C3D00" strokeWidth="1.6" strokeLinecap="round"/>
+        <path d="M18 10 C 12 10, 10 14, 10 18 C 10 22, 14 26, 18 26"
+              fill="none" stroke="#5C3D00" strokeWidth="1.6" strokeLinecap="round"/>
+        {/* stem + base */}
+        <path d="M28 38 L36 38 L36 46 L28 46 Z" fill="url(#goldB)" stroke="#5C3D00" strokeWidth="1.4"/>
+        <path d="M18 46 L46 46 L48 54 L16 54 Z" fill="url(#goldB)" stroke="#5C3D00" strokeWidth="1.4"/>
+        {/* shine highlight */}
+        <ellipse cx="26" cy="14" rx="3" ry="5" fill="rgba(255,255,255,0.7)"/>
+      </svg>
+      <span className="sparkle" style={{ top: "-3px", left:  "0px",  animationDelay: "0s"   }}>✦</span>
+      <span className="sparkle" style={{ top: "10px", right: "-3px", animationDelay: "0.7s" }}>✦</span>
+      <span className="sparkle" style={{ bottom:"6px",right: "-2px", animationDelay: "1.3s" }}>✦</span>
+      <span className="sparkle" style={{ top: "22px", left: "-4px",  animationDelay: "1.8s" }}>✦</span>
+    </div>
+  );
+}
+
+/* ================================================================== */
+/*  HeroSlideshow — cross-fades through multiple frames on a timer.     */
+/* ================================================================== */
+function HeroSlideshow({ frames, interval=7000, theme, onClick }){
+  const [idx, setIdx] = useState(0);
+  const [errored, setErrored] = useState({});
+  useEffect(() => { setIdx(0); }, [frames]);
+  useEffect(() => {
+    if (!frames || frames.length <= 1) return;
+    const id = setInterval(() => setIdx(i => (i + 1) % frames.length), interval);
+    return () => clearInterval(id);
+  }, [frames, interval]);
+
+  const handleClick = () => {
+    if (onClick && frames[idx]) onClick({ type: "image", ...frames[idx] });
+  };
+
+  return (
+    <div className="relative w-full h-full overflow-hidden" onClick={handleClick}
+         style={{ cursor: onClick ? "zoom-in" : "default", background: theme.ink }}>
+      {frames.map((frame, i) => (
+        <div
+          key={i}
+          className="slide"
+          style={{ opacity: idx === i && !errored[i] ? 1 : 0 }}
+        >
+          {/* blurred backdrop fills the box edge-to-edge */}
+          <img src={frame.src} alt="" aria-hidden className="slide-backdrop"/>
+          {/* full, uncropped photo on top */}
+          <img
+            src={frame.src}
+            alt={frame.label || ""}
+            className="slide-main"
+            onError={() => setErrored(prev => ({ ...prev, [i]: true }))}
+          />
+        </div>
+      ))}
+      {/* dot indicators */}
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+        {frames.map((_, i) => (
+          <button
+            key={i}
+            onClick={(e) => { e.stopPropagation(); setIdx(i); }}
+            className="rounded-full border-2 transition-all duration-300"
+            style={{
+              width: idx === i ? 26 : 10,
+              height: 10,
+              background: idx === i ? theme.primary : "rgba(255,255,255,0.7)",
+              borderColor: theme.ink,
+              boxShadow: idx === i ? `2px 2px 0 ${theme.ink}` : "none",
+            }}
+            aria-label={`Slide ${i+1}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ================================================================== */
+/*  Avatar SVGs — clean faceless silhouettes (girl-with-hijab / boy)   */
+/*  Flat icon style, theme-tinted, no facial features.                  */
+/* ================================================================== */
+function GirlAvatar({ theme, variant=0 }){
+  const palette = [theme.primary, theme.accent, theme.secondary];
+  const fill = palette[variant % 3];
+  const bg   = `color-mix(in oklab, ${fill} 18%, white)`;
+  return (
+    <svg viewBox="0 0 100 100" className="w-full h-full block" preserveAspectRatio="xMidYMid slice">
+      <rect width="100" height="100" fill={bg}/>
+      {/* one continuous silhouette: hijab → face cut → shoulders */}
+      <path d="
+        M50 14
+        C 30 14, 20 32, 22 54
+        C 23 63, 27 71, 33 76
+        C 33 78, 32 80, 30 81
+        C 16 84, 8 92, 8 100
+        L 92 100
+        C 92 92, 84 84, 70 81
+        C 68 80, 67 78, 67 76
+        C 73 71, 77 63, 78 54
+        C 80 32, 70 14, 50 14 Z"
+        fill={fill}/>
+      {/* subtle highlight along the hijab edge */}
+      <path d="M50 16 C 34 16, 26 28, 24 44" stroke="rgba(255,255,255,0.35)" strokeWidth="2" fill="none" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+function BoyAvatar({ theme, variant=0 }){
+  const palette = [theme.accent, theme.primary, theme.secondary];
+  const fill = palette[variant % 3];
+  const bg   = `color-mix(in oklab, ${fill} 18%, white)`;
+  return (
+    <svg viewBox="0 0 100 100" className="w-full h-full block" preserveAspectRatio="xMidYMid slice">
+      <rect width="100" height="100" fill={bg}/>
+      {/* head */}
+      <circle cx="50" cy="36" r="17" fill={fill}/>
+      {/* shoulders */}
+      <path d="M14 100 C 14 76, 28 62, 50 62 C 72 62, 86 76, 86 100 Z" fill={fill}/>
+      {/* subtle highlight */}
+      <path d="M40 26 C 42 22, 46 20, 50 20" stroke="rgba(255,255,255,0.35)" strokeWidth="2" fill="none" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+/* ================================================================== */
+/*  Navbar with sliding underline                                      */
+/* ================================================================== */
+function Navbar({ active, onChange, theme, lang, setLang, t, view, onHome, onMessage }){
+  const navRef = useRef(null);
+  const btnRefs = useRef({});
+  const [indicator, setIndicator] = useState({ x: 0, w: 0, visible: false });
+  const onMsgPage = view === "message";
+
+  useLayoutEffect(() => {
+    const btn = btnRefs.current[active.id];
+    const parent = navRef.current;
+    if (btn && parent) {
+      const pr = parent.getBoundingClientRect();
+      const br = btn.getBoundingClientRect();
+      setIndicator({ x: br.left - pr.left, w: br.width, visible: true });
+    }
+  }, [active.id, lang, view]);
+
+  return (
+    <header
+      className="sticky top-0 z-40 w-full backdrop-blur-md border-b"
+      style={{
+        background: `color-mix(in oklab, ${theme.panel} 88%, transparent)`,
+        borderColor: `color-mix(in oklab, ${theme.ink} 12%, transparent)`,
+      }}
+    >
+      <div className="max-w-7xl mx-auto px-3 md:px-5 h-[82px] flex items-center justify-between gap-2 md:gap-4">
+        <a href="#top" onClick={(e) => { e.preventDefault(); onHome(); }} className="flex items-center gap-3 shrink-0 cursor-pointer">
+          <Logo theme={theme} size={54}/>
+          <div className="hidden lg:block leading-tight">
+            <div className="font-display font-bold text-lg" style={{ color: theme.ink }}>Tech Crew</div>
+            <div className="text-[11px] uppercase tracking-[0.18em]" style={{ color: theme.ink, opacity: .6 }}>
+              {t.teamSub}
+            </div>
+          </div>
+        </a>
+
+        <div className="flex items-center gap-2 md:gap-3">
+          <button
+            onClick={onMessage}
+            className="inline-flex items-center px-3 lg:px-4 py-2 rounded-full text-[12px] lg:text-[13px] font-semibold uppercase tracking-wider whitespace-nowrap border-2 shrink-0"
+            style={{
+              background: onMsgPage ? theme.primary : "transparent",
+              color: theme.ink,
+              borderColor: onMsgPage ? theme.ink : `color-mix(in oklab, ${theme.ink} 18%, transparent)`,
+              boxShadow: onMsgPage ? `3px 3px 0 ${theme.ink}` : "none",
+              transform: onMsgPage ? "translate(-1.5px,-1.5px)" : "none",
+            }}
+          >
+            {t.navMessage}
+          </button>
+          <nav
+            ref={navRef}
+            className="relative flex items-center gap-1.5 overflow-x-auto nav-scroll"
+            aria-label="Season selector"
+          >
+            {SEASONS.map((s) => {
+              const isActive = s.id === active.id;
+              return (
+                <button
+                  key={s.id}
+                  ref={el => { if (el) btnRefs.current[s.id] = el; }}
+                  onClick={(e) => onChange(s, e)}
+                  className="relative px-3 md:px-4 py-2 rounded-full text-[12px] md:text-[13px] font-semibold uppercase tracking-wider whitespace-nowrap border-2"
+                  style={{
+                    background: isActive ? s.theme.primary : "transparent",
+                    color: isActive ? s.theme.ink : theme.ink,
+                    borderColor: isActive ? s.theme.ink : `color-mix(in oklab, ${theme.ink} 18%, transparent)`,
+                    boxShadow: isActive ? `3px 3px 0 ${s.theme.ink}` : "none",
+                    transform: isActive ? "translate(-1.5px,-1.5px)" : "none",
+                  }}
+                >
+                  <span className="hidden md:inline">{s.name}</span>
+                  <span className="md:hidden">{s.name.slice(0,4)}</span>
+                  <span className="ml-2 opacity-60 text-[10px] hidden lg:inline">{s.years}</span>
+                </button>
+              );
+            })}
+            {indicator.visible && (
+              <span
+                aria-hidden
+                className="nav-underline absolute -bottom-1 h-1 rounded-full pointer-events-none"
+                style={{
+                  width: indicator.w,
+                  transform: `translateX(${indicator.x}px)`,
+                  background: theme.secondary,
+                }}
+              />
+            )}
+          </nav>
+
+          <div
+            className="flex shrink-0 rounded-full border-2 p-0.5"
+            style={{ borderColor: theme.ink, background: theme.panel }}
+            role="group"
+            aria-label="Language"
+          >
+            {["ar","fr"].map(l => (
+              <button
+                key={l}
+                onClick={() => setLang(l)}
+                className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider"
+                style={{
+                  background: lang===l ? theme.ink : "transparent",
+                  color:      lang===l ? theme.panel : theme.ink,
+                }}
+              >
+                {l}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+/* ================================================================== */
+/*  Hero                                                               */
+/* ================================================================== */
+function Hero({ season, theme, t, lang, onImageClick }){
+  const heroMedia = SEASON_MEDIA[season.id].team;
+  const memberCount =
+    ((SEASON_TEAMS[season.id]    || []).length) +
+    ((SEASON_COACHES[season.id]  || []).length);
+  return (
+    <section
+      data-screen-label="Hero"
+      className="relative overflow-hidden"
+      style={{ background: theme.panel }}
+    >
+      <div className="absolute inset-0 grid-bg opacity-60 pointer-events-none"/>
+      <div className="max-w-7xl mx-auto px-5 md:px-8 pt-12 md:pt-16 pb-10 md:pb-16 grid md:grid-cols-12 gap-8 items-end relative">
+        <div className="md:col-span-6 lg:col-span-5">
+          <Pill theme={theme} filled>{t.seasonLabel} {season.years}</Pill>
+          <h1 className="font-display font-bold text-5xl md:text-6xl lg:text-7xl mt-5 leading-[0.95]" style={{ color: theme.ink }}>
+            Tech Crew<br/>
+            <span className="scribble-underline">{season.name}</span>
+          </h1>
+          <p className="mt-6 text-lg md:text-xl max-w-xl" style={{ color: theme.ink, opacity:.78 }}>
+            {season.tagline[lang]}
+          </p>
+          <div className="mt-7 flex flex-wrap gap-3">
+            <a href="#robot" className="px-5 py-3 rounded-full font-semibold border-2 inline-flex items-center gap-2"
+               style={{ background: theme.ink, color: theme.panel, borderColor: theme.ink }}>
+              {t.meetRobot} {lang === "ar" ? "←" : "→"}
+            </a>
+            <a href="#project" className="px-5 py-3 rounded-full font-semibold border-2 inline-flex items-center gap-2"
+               style={{ background: "transparent", color: theme.ink, borderColor: theme.ink }}>
+              {t.seeProject}
+            </a>
+          </div>
+
+          <div className="mt-10 grid grid-cols-3 gap-6 max-w-md">
+            {[
+              [String(memberCount), t.statMembers],
+              ["3",  t.statSeasons],
+              ["2",  t.statQuals],
+            ].map(([n,l]) => (
+              <div key={l}>
+                <div className="font-display font-bold text-4xl" style={{ color: theme.secondary }}>{n}</div>
+                <div className="text-xs uppercase tracking-widest mt-1" style={{ color: theme.ink, opacity:.6 }}>{l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="md:col-span-6 lg:col-span-7 relative">
+          <div className="relative rounded-[28px] overflow-hidden border-2 aspect-[4/3]"
+               style={{ borderColor: theme.ink, boxShadow: `12px 12px 0 ${theme.ink}` }}>
+            {heroMedia && heroMedia.type === "slideshow" ? (
+              <HeroSlideshow
+                frames={heroMedia.frames}
+                interval={heroMedia.interval || 7000}
+                theme={theme}
+                onClick={(frame) => onImageClick(frame)}
+              />
+            ) : (
+              <SmartMedia
+                item={heroMedia}
+                w={800} h={600}
+                theme={theme}
+                onClick={() => onImageClick(heroMedia)}
+              />
+            )}
+          </div>
+          <div className="absolute -top-4 -left-4 rotate-[-6deg] hidden md:block">
+            <div className="px-3 py-1.5 rounded-md font-mono text-xs border-2"
+                 style={{ background: theme.accent, color: theme.ink, borderColor: theme.ink }}>
+              {season.name} · {season.years}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="relative border-t-2 border-b-2 py-2 overflow-hidden"
+           style={{ borderColor: theme.ink, background: theme.primary }}>
+        <div className="flex gap-10 whitespace-nowrap font-display font-bold uppercase tracking-[0.18em]"
+             style={{ color: theme.ink }}>
+          {Array.from({length:8}).map((_,i) => (
+            <span key={i} className="inline-flex items-center gap-10 text-sm">
+              <span>Tech Crew</span><span>◆</span>
+              <span>{season.name}</span><span>◆</span>
+              <span>FLL C-325</span><span>◆</span>
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================== */
+/*  About — visible on all seasons                                     */
+/* ================================================================== */
+function About({ theme, t, lang }){
+  const facts = [
+    { l: t.aboutFact1Label, v: t.aboutFact1Value },
+    { l: t.aboutFact2Label, v: t.aboutFact2Value },
+    { l: t.aboutFact3Label, v: t.aboutFact3Value },
+  ];
+  return (
+    <section
+      id="about"
+      data-screen-label="About"
+      className="py-20 md:py-24 border-t-2"
+      style={{ borderColor: theme.ink, background: "white" }}
+      lang={lang}
+    >
+      <div className="max-w-7xl mx-auto px-5 md:px-8 grid lg:grid-cols-12 gap-10">
+        <div className="lg:col-span-5">
+          <div className="text-xs uppercase tracking-[0.22em] font-semibold mb-3" style={{ color: theme.secondary }}>
+            {t.aboutKicker}
+          </div>
+          <h2 className="font-display font-bold text-4xl md:text-5xl leading-[1.02]" style={{ color: theme.ink }}>
+            {t.aboutTitle}
+          </h2>
+
+          <div className="mt-7 inline-flex items-center gap-3 p-3 pr-5 rounded-2xl border-2"
+               style={{ borderColor: theme.ink, background: theme.panel }}>
+            <div className="w-12 h-12 rounded-xl grid place-items-center border-2"
+                 style={{ background: theme.primary, borderColor: theme.ink }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke={theme.ink} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <div className="leading-tight">
+              <div className="font-display font-bold text-base" style={{ color: theme.ink }}>
+                {lang === "ar" ? "الثانوية الإعدادية الشهيد المدني شفيق" : "Collège Chahid El Madani Chafik"}
+              </div>
+              <div className="text-xs uppercase tracking-widest" style={{ color: theme.ink, opacity:.6 }}>
+                {lang === "ar"
+                  ? "توندوت · إقليم ورزازات · المغرب"
+                  : "Toundoute · Province d'Ouarzazate · Maroc"}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="lg:col-span-7">
+          <p className="text-lg md:text-xl leading-relaxed" style={{ color: theme.ink }}>
+            {t.aboutP1}
+          </p>
+          <p className="text-base md:text-lg leading-relaxed mt-5" style={{ color: theme.ink, opacity:.78 }}>
+            {t.aboutP2}
+          </p>
+
+          <div className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-3">
+            {facts.map((f, i) => (
+              <div key={i} className="p-4 rounded-xl border-2"
+                   style={{ borderColor: theme.ink, background: i===1 ? theme.primary : "white" }}>
+                <div className="font-display font-bold text-xl md:text-2xl" style={{ color: theme.ink }}>
+                  {f.v}
+                </div>
+                <div className="text-[10px] uppercase tracking-widest mt-1" style={{ color: theme.ink, opacity:.65 }}>
+                  {f.l}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================== */
+/*  Video banner — full-width AI logo video + darkened centered text    */
+/* ================================================================== */
+function VideoBanner({ theme, t, lang, onSponsors }){
+  return (
+    <section id="intro" data-screen-label="Message"
+             className="relative overflow-hidden"
+             style={{ background: theme.ink, minHeight: "calc(100vh - 82px)" }}>
+      {/* background video */}
+      <video
+        src="./public/images/video-web.mp4"
+        poster="./public/images/video-poster.jpg"
+        autoPlay muted loop playsInline preload="metadata"
+        className="absolute inset-0 w-full h-full object-cover"
+        aria-hidden="true"
+      />
+      {/* dark layer for legibility */}
+      <div className="absolute inset-0 pointer-events-none"
+           style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.72))" }}/>
+      {/* season-colored glow behind the text */}
+      <div className="absolute inset-0 pointer-events-none"
+           style={{ background: `radial-gradient(circle at 50% 45%, color-mix(in oklab, ${theme.primary} 26%, transparent), transparent 62%)` }}/>
+
+      <div className="relative w-full px-5 md:px-6 py-20 flex items-center justify-center"
+           style={{ minHeight: "calc(100vh - 82px)" }}>
+        <div className="w-full max-w-3xl rounded-3xl border p-7 md:p-12 text-center"
+             style={{
+               background: "rgba(0,0,0,0.42)",
+               backdropFilter: "blur(10px)",
+               WebkitBackdropFilter: "blur(10px)",
+               borderColor: "rgba(255,255,255,0.18)",
+               boxShadow: "0 30px 80px rgba(0,0,0,0.55)",
+               animation: "fadeUp 700ms cubic-bezier(.4,0,.2,1) both",
+             }}>
+          <div className="inline-block text-[11px] uppercase tracking-[0.3em] font-bold mb-6 px-3 py-1 rounded-full"
+               style={{ color: theme.ink, background: theme.primary }}>
+            {t.bannerKicker}
+          </div>
+
+          <p className="font-display font-bold text-2xl md:text-4xl leading-snug text-white"
+             style={{ textShadow: "0 2px 16px rgba(0,0,0,0.6)" }}>
+            {t.bannerLead}
+          </p>
+
+          <p className="mt-5 text-[15px] md:text-lg leading-relaxed mx-auto"
+             style={{ color: "rgba(255,255,255,0.9)" }}>
+            {t.bannerBody}
+          </p>
+
+          {/* where the sponsor's logo appears */}
+          <div className="mt-8">
+            <div className="text-xs uppercase tracking-[0.18em] font-semibold mb-3" style={{ color: "rgba(255,255,255,0.7)" }}>
+              {t.bannerPerksLabel}
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              {t.bannerPerks.map((p, i) => (
+                <span key={i}
+                      className="px-3 py-1.5 rounded-full text-xs md:text-sm font-semibold border"
+                      style={{ color: "white", borderColor: "rgba(255,255,255,0.35)", background: "rgba(255,255,255,0.06)" }}>
+                  {p}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* CTAs */}
+          <div className="mt-9 flex flex-wrap gap-3 justify-center">
+            <button
+              onClick={onSponsors}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold border-2 transition-transform hover:-translate-y-0.5"
+              style={{ background: theme.primary, color: theme.ink, borderColor: "white", boxShadow: "4px 4px 0 rgba(0,0,0,0.45)" }}>
+              {t.bannerCta} {lang === "ar" ? "←" : "→"}
+            </button>
+            <a
+              href="#"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold border-2 transition-transform hover:-translate-y-0.5"
+              style={{ background: "transparent", color: "white", borderColor: "rgba(255,255,255,0.6)" }}>
+              ↓ {t.footerSponsorBtn}
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SectionHead({ kicker, title, theme }){
+  return (
+    <div className="mb-10 md:mb-14 flex items-end justify-between gap-6 flex-wrap">
+      <div>
+        <div className="text-xs uppercase tracking-[0.22em] font-semibold mb-3" style={{ color: theme.secondary }}>
+          {kicker}
+        </div>
+        <h2 className="font-display font-bold text-4xl md:text-5xl leading-[1.02]" style={{ color: theme.ink }}>
+          {title}
+        </h2>
+      </div>
+      <div className="h-1.5 flex-1 min-w-[80px] rounded-full" style={{ background: theme.primary }}/>
+    </div>
+  );
+}
+
+/* ================================================================== */
+/*  Achievements                                                       */
+/* ================================================================== */
+function Achievements({ season, theme, t, lang }){
+  const items = season.achievements[lang];
+  // adaptive grid — 1 col on mobile, 2 cols if <=2 items, otherwise up to 3
+  const colsClass = items.length <= 2 ? "lg:grid-cols-2" : "lg:grid-cols-3";
+  return (
+    <section id="achievements" data-screen-label="Achievements" className="py-20 md:py-28" style={{ background: theme.panel }}>
+      <div className="max-w-7xl mx-auto px-5 md:px-8">
+        <SectionHead kicker={t.achievementsKicker} title={t.achievementsTitle} theme={theme}/>
+        <div className={`grid sm:grid-cols-2 ${colsClass} gap-5`}>
+          {items.map((a, i) => (
+            <article key={i}
+              className="relative rounded-2xl p-6 border-2 flex flex-col gap-4 overflow-hidden"
+              style={{
+                background: a.highlight ? theme.primary : "white",
+                borderColor: theme.ink,
+                boxShadow: `6px 6px 0 ${theme.ink}`,
+              }}>
+              {/* subtle radial glow behind brilliant trophies */}
+              {a.highlight && (
+                <div aria-hidden className="absolute -top-8 -left-8 w-40 h-40 rounded-full pointer-events-none"
+                     style={{ background: "radial-gradient(circle, rgba(255,235,150,0.55), transparent 70%)" }}/>
+              )}
+              <div className="flex items-center justify-between relative">
+                {a.highlight ? (
+                  <div className="w-14 h-14 rounded-xl grid place-items-center border-2"
+                       style={{ background: "white", borderColor: theme.ink }}>
+                    <BrilliantTrophy size={44}/>
+                  </div>
+                ) : (
+                  <div className="w-12 h-12 rounded-xl grid place-items-center border-2"
+                       style={{ background: theme.primary, borderColor: theme.ink }}>
+                    {season.noTrophy ? <CheckIcon color={theme.ink}/> : <TrophyIcon color={theme.ink}/>}
+                  </div>
+                )}
+                <span className="font-mono text-xs px-2 py-1 rounded"
+                      style={{ background: theme.ink, color: theme.panel }}>0{i+1}</span>
+              </div>
+              <h3 className="font-display font-bold text-lg leading-tight relative" style={{ color: theme.ink }}>{a.title}</h3>
+              <p className="text-sm leading-relaxed relative" style={{ color: theme.ink, opacity: a.highlight ? .85 : .72 }}>{a.note}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================== */
+/*  Robot                                                              */
+/* ================================================================== */
+function NotAvailableCard({ theme, t }){
+  return (
+    <div className="p-8 rounded-2xl border-2 grid place-items-center text-center"
+         style={{ borderColor: theme.ink, background: theme.panel, boxShadow: `6px 6px 0 ${theme.ink}` }}>
+      <div className="w-12 h-12 rounded-xl grid place-items-center border-2 mb-4 mx-auto"
+           style={{ background: theme.primary, borderColor: theme.ink }}>
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke={theme.ink} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><circle cx="12" cy="16" r="0.5" fill={theme.ink}/>
+        </svg>
+      </div>
+      <div className="font-display font-bold text-xl mb-1" style={{ color: theme.ink }}>{t.notAvailable}</div>
+      <div className="text-sm" style={{ color: theme.ink, opacity: 0.7 }}>{t.notAvailableSub}</div>
+    </div>
+  );
+}
+
+function Robot({ season, theme, t, lang, onImageClick }){
+  const r = ROBOT_COPY[lang][season.id];
+  const items = SEASON_MEDIA[season.id].robots;
+  return (
+    <section id="robot" data-screen-label="Robot" className="py-20 md:py-28 border-t-2"
+             style={{ borderColor: theme.ink, background: "white" }}>
+      <div className="max-w-7xl mx-auto px-5 md:px-8">
+        <SectionHead kicker={t.robotKicker} title={`${t.robotTitle} — ${season.name}`} theme={theme}/>
+
+        <div className="grid lg:grid-cols-12 gap-10 items-start">
+          <div className="lg:col-span-7 grid grid-cols-6 gap-4">
+            {items.map((item, i) => (
+              <div key={i}
+                   className={`${item.span} ${item.aspect} rounded-2xl overflow-hidden border-2 relative`}
+                   style={{ borderColor: theme.ink, boxShadow: item.shadow ? `8px 8px 0 ${theme.ink}` : "none" }}>
+                <SmartMedia
+                  item={item} w={900} h={560}
+                  theme={theme}
+                  onClick={() => onImageClick(item)}
+                />
+                {item.type === "video" && (
+                  <span className="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] uppercase tracking-wider font-bold pointer-events-none"
+                        style={{ background: theme.ink, color: theme.panel }}>{lang === "ar" ? "▶ مرّر للتشغيل" : "▶ survoler pour lire"}</span>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="lg:col-span-5">
+            {season.noDetails ? (
+              <NotAvailableCard theme={theme} t={t}/>
+            ) : (
+              <>
+                {season.robot.name && (
+                  <div className="inline-flex items-center gap-2 mb-5">
+                    <span className="font-mono text-xs px-2 py-1 rounded border-2"
+                          style={{ borderColor: theme.ink, color: theme.ink }}>{t.robotMeet}</span>
+                    <span className="font-display font-bold text-2xl" style={{ color: theme.accent === "#FCD9A8" ? theme.secondary : theme.accent }}>
+                      {season.robot.name}
+                    </span>
+                  </div>
+                )}
+
+                <h4 className="font-display font-bold text-sm uppercase tracking-[0.18em] mb-3" style={{ color: theme.secondary }}>
+                  {t.robotStrategy}
+                </h4>
+                <p className="text-[15px] leading-relaxed mb-6" style={{ color: theme.ink }}>{r.strategy}</p>
+
+                <h4 className="font-display font-bold text-sm uppercase tracking-[0.18em] mb-3" style={{ color: theme.secondary }}>
+                  {t.robotAttachments}
+                </h4>
+                <ul className="space-y-2.5 mb-6">
+                  {r.attachments.map((a,i) => (
+                    <li key={i} className="flex gap-3 items-start text-[15px]" style={{ color: theme.ink }}>
+                      <span className="mt-2 w-2 h-2 rounded-sm shrink-0" style={{ background: theme.primary, outline:`2px solid ${theme.ink}` }}/>
+                      {a}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="p-5 rounded-2xl border-2" style={{ background: theme.panel, borderColor: theme.ink }}>
+                  <div className="text-xs uppercase tracking-[0.18em] font-semibold mb-2" style={{ color: theme.secondary }}>
+                    {t.robotMissions}
+                  </div>
+                  <p className="text-[15px] leading-relaxed" style={{ color: theme.ink }}>{r.missions}</p>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================== */
+/*  Innovation Project                                                 */
+/* ================================================================== */
+function Project({ season, theme, t, lang, onImageClick }){
+  const p = PROJECT_COPY[lang][season.id];
+  const proj = season.project[lang];
+  const items = SEASON_MEDIA[season.id].projects;
+  return (
+    <section id="project" data-screen-label="Innovation Project" className="py-20 md:py-28 border-t-2"
+             style={{ borderColor: theme.ink, background: theme.panel }}>
+      <div className="max-w-7xl mx-auto px-5 md:px-8">
+        <SectionHead kicker={t.projectKicker} title={proj.title} theme={theme}/>
+
+        {proj.specialNote && (
+          <div className="mb-8 inline-flex items-center gap-2 px-4 py-2 rounded-full border-2 font-display font-bold"
+               style={{ background: theme.primary, color: theme.ink, borderColor: theme.ink, boxShadow: `4px 4px 0 ${theme.ink}` }}>
+            {proj.specialNote}
+          </div>
+        )}
+
+        <div className="grid lg:grid-cols-12 gap-10 items-start">
+          <div className="lg:col-span-5 order-2 lg:order-1">
+            {season.noDetails ? (
+              <NotAvailableCard theme={theme} t={t}/>
+            ) : (
+              <>
+                <div className="inline-block px-3 py-1.5 rounded-md text-xs font-mono mb-4 border-2"
+                     style={{ background: theme.secondary, color: theme.panel, borderColor: theme.ink }}>
+                  {t.projectProblem}
+                </div>
+                <p className="text-lg leading-relaxed" style={{ color: theme.ink }}>{p.problem}</p>
+
+                <div className="inline-block px-3 py-1.5 rounded-md text-xs font-mono mb-4 mt-8 border-2"
+                     style={{ background: theme.accent, color: theme.ink, borderColor: theme.ink }}>
+                  {t.projectSolution}
+                </div>
+                <p className="text-lg leading-relaxed" style={{ color: theme.ink }}>{p.solution}</p>
+
+                <div className="inline-block px-3 py-1.5 rounded-md text-xs font-mono mb-4 mt-8 border-2"
+                     style={{ background: theme.primary, color: theme.ink, borderColor: theme.ink }}>
+                  {t.projectImpact}
+                </div>
+                <p className="text-lg leading-relaxed" style={{ color: theme.ink }}>{p.impact}</p>
+              </>
+            )}
+          </div>
+
+          <div className="lg:col-span-7 order-1 lg:order-2 grid grid-cols-6 gap-4">
+            {items.map((item, i) => (
+              <div key={i}
+                   className={`${item.span} ${item.aspect} rounded-2xl overflow-hidden border-2 relative`}
+                   style={{ borderColor: theme.ink, boxShadow: item.shadow ? `8px 8px 0 ${theme.ink}` : "none" }}>
+                <SmartMedia
+                  item={item} w={960} h={540}
+                  theme={theme}
+                  onClick={() => onImageClick(item)}
+                />
+                {item.type === "video" && (
+                  <span className="absolute top-2 left-2 px-2 py-0.5 rounded text-[10px] uppercase tracking-wider font-bold pointer-events-none"
+                        style={{ background: theme.ink, color: theme.panel }}>{lang === "ar" ? "▶ مرّر للتشغيل" : "▶ survoler pour lire"}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================== */
+/*  Team — coaches + students                                          */
+/* ================================================================== */
+function CoachCard({ coach, theme, lang, variant }){
+  const role = lang === "ar" ? coach.roleAR : coach.roleFR;
+  return (
+    <article
+      className="p-5 rounded-3xl border-2 flex items-center gap-5"
+      style={{ borderColor: theme.ink, background: "white", boxShadow: `8px 8px 0 ${theme.ink}` }}
+    >
+      <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-2 shrink-0"
+           style={{ borderColor: theme.ink, background: "white" }}>
+        {coach.gender === "f"
+          ? <GirlAvatar theme={theme} variant={variant}/>
+          : <BoyAvatar  theme={theme} variant={variant}/>}
+      </div>
+      <div className="leading-tight">
+        <div className="text-[10px] uppercase tracking-[0.22em] font-bold mb-1" style={{ color: theme.secondary }}>
+          {role}
+        </div>
+        <div className="font-display font-bold text-xl" style={{ color: theme.ink }}>{coach.name}</div>
+        <a href={`mailto:${coach.email}`} className="block mt-1 text-xs underline decoration-dotted" style={{ color: theme.ink }}>
+          {coach.email}
+        </a>
+        <a href={`tel:${coach.phoneIntl.replace(/\s/g,"")}`} className="block text-xs" style={{ color: theme.ink, opacity:.7 }}>
+          {coach.phone}
+        </a>
+      </div>
+    </article>
+  );
+}
+
+function MemberCard({ member, theme, lang, i }){
+  const role = lang === "ar" ? member.roleAR : member.roleFR;
+  const groupLabel = member.group === "robot"
+    ? "Robot Game"
+    : (lang === "ar" ? "مشروع الابتكار" : "Projet d'Innovation");
+  const Avatar = member.gender === "m" ? BoyAvatar : GirlAvatar;
+  return (
+    <article className="member-card text-center relative">
+      <div
+        className="relative mx-auto w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-2"
+        style={{
+          borderColor: theme.ink,
+          boxShadow: `5px 5px 0 ${theme.ink}`,
+          background: "white",
+        }}
+      >
+        <Avatar theme={theme} variant={i}/>
+      </div>
+      <div className="mt-4 font-display font-bold text-[15px] leading-tight" style={{ color: theme.ink }}>
+        {member.name}
+      </div>
+      <div className="mt-1 flex flex-col items-center gap-1">
+        <span
+          className="inline-block px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-bold border"
+          style={{
+            background: theme.accent,
+            color: theme.ink,
+            borderColor: theme.ink,
+          }}
+        >
+          {role}
+        </span>
+        <span
+          className="inline-block px-2 py-0.5 rounded-full text-[9px] uppercase tracking-wider font-bold"
+          style={{
+            background: member.group === "robot" ? theme.primary : `color-mix(in oklab, ${theme.secondary} 18%, white)`,
+            color: theme.ink,
+          }}
+        >
+          {groupLabel}
+        </span>
+      </div>
+    </article>
+  );
+}
+
+function Team({ season, theme, t, lang }){
+  const coaches  = SEASON_COACHES[season.id] || [];
+  const students = SEASON_TEAMS[season.id]  || [];
+  return (
+    <section id="team" data-screen-label="Team" className="py-20 md:py-28 border-t-2"
+             style={{ borderColor: theme.ink, background: "white" }}>
+      <div className="max-w-7xl mx-auto px-5 md:px-8">
+        <SectionHead kicker={t.teamKicker} title={t.teamTitle} theme={theme}/>
+
+        {/* Coaches */}
+        <div className="mb-12">
+          <h3 className="font-display font-bold text-xl uppercase tracking-[0.18em] mb-5" style={{ color: theme.secondary }}>
+            {t.teamCoaches}
+          </h3>
+          <div className="grid md:grid-cols-2 gap-6">
+            {coaches.map((c, i) => <CoachCard key={i} coach={c} theme={theme} lang={lang} variant={i}/>)}
+          </div>
+        </div>
+
+        {/* Students */}
+        <div>
+          <h3 className="font-display font-bold text-xl uppercase tracking-[0.18em] mb-5" style={{ color: theme.secondary }}>
+            {t.teamStudents}
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-y-10 gap-x-5">
+            {students.map((m, i) => <MemberCard key={i} member={m} theme={theme} lang={lang} i={i}/>)}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================== */
+/*  Sponsors — single uniform grid, add partners one by one            */
+/* ================================================================== */
+function SponsorCard({ s, theme, t }){
+  const isPlaceholder = !s.url || s.name.startsWith("TODO");
+  const Inner = (
+    <div
+      className="sponsor-logo h-24 sm:h-28 px-5 w-full rounded-xl border-2 flex items-center justify-center bg-white"
+      style={{ borderColor: theme.primary, boxShadow: `4px 4px 0 ${theme.ink}` }}
+      title={s.name}
+    >
+      <div className="flex items-center gap-3 text-center">
+        <div className="w-12 h-12 rounded-md shrink-0"
+             style={{ background: theme.primary, outline:`2px solid ${theme.ink}` }}/>
+        <div className="font-display font-bold text-sm sm:text-base leading-tight"
+             style={{ color: theme.ink }}>
+          {isPlaceholder ? t.sponsorSlot : s.name}
+        </div>
+      </div>
+    </div>
+  );
+  return s.url
+    ? <a href={s.url} target="_blank" rel="noreferrer noopener" className="block">{Inner}</a>
+    : Inner;
+}
+
+function Sponsors({ theme, t, lang }){
+  return (
+    <section id="sponsors" data-screen-label="Sponsors" className="py-20 md:py-28 border-t-2"
+             style={{ borderColor: theme.ink, background: theme.panel }}>
+      <div className="max-w-7xl mx-auto px-5 md:px-8">
+        <SectionHead kicker={t.sponsorsKicker} title={t.sponsorsTitle} theme={theme}/>
+        <p className="-mt-6 mb-14 max-w-3xl text-base md:text-lg" style={{ color: theme.ink, opacity:.78 }}>
+          {t.sponsorsSubtitle}
+        </p>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
+          {SPONSORS.map((s, i) => <SponsorCard key={i} s={s} theme={theme} t={t}/>)}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================== */
+/*  Footer — secondary bg, 2 columns + socials                         */
+/* ================================================================== */
+function Footer({ season, theme, t, lang }){
+  const coaches = SEASON_COACHES[season.id] || [];
+  // pick readable text color against secondary
+  const onSecondary = "white";
+  const muted = "rgba(255,255,255,0.78)";
+
+  return (
+    <footer
+      className="py-14 border-t-2"
+      style={{ borderColor: theme.ink, background: theme.secondary, color: onSecondary }}
+    >
+      <div className="max-w-7xl mx-auto px-5 md:px-8 grid md:grid-cols-2 gap-12">
+        {/* Left — Become a Sponsor */}
+        <div>
+          <div className="text-xs uppercase tracking-[0.22em] font-bold mb-3" style={{ color: theme.primary }}>
+            {t.footerSponsorTitle}
+          </div>
+          <p className="text-base md:text-lg leading-relaxed" style={{ color: onSecondary }}>
+            {t.footerSponsorCopy}
+          </p>
+          <a
+            href="#"
+            className="mt-6 inline-flex items-center gap-2 px-5 py-3 rounded-full font-semibold border-2 transition-transform hover:-translate-y-0.5"
+            style={{ background: theme.primary, color: theme.ink, borderColor: theme.ink, boxShadow: `4px 4px 0 ${theme.ink}` }}
+          >
+            ↓ {t.footerSponsorBtn}
+          </a>
+        </div>
+
+        {/* Right — Contact + socials */}
+        <div>
+          <div className="text-xs uppercase tracking-[0.22em] font-bold mb-3" style={{ color: theme.primary }}>
+            {t.footerContactTitle}
+          </div>
+          <div className="space-y-5">
+            {coaches.map((c, i) => (
+              <div key={i} className="leading-relaxed">
+                <div className="font-display font-bold text-base" style={{ color: onSecondary }}>{c.name}</div>
+                <div className="text-xs uppercase tracking-[0.18em] mb-2" style={{ color: muted }}>{lang === "ar" ? c.roleAR : c.roleFR}</div>
+                <a href={`mailto:${c.email}`} className="flex items-center gap-2 text-sm" style={{ color: onSecondary }}>
+                  <MailIcon color={onSecondary}/> {c.email}
+                </a>
+                <a href={`tel:${c.phoneIntl.replace(/\s/g,"")}`} className="flex items-center gap-2 text-sm mt-0.5" style={{ color: onSecondary }}>
+                  <PhoneIcon color={onSecondary}/> {c.phone}
+                </a>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-7 flex gap-3">
+            <a href="https://www.facebook.com/profile.php?id=61573513858627" target="_blank" rel="noreferrer noopener" aria-label="Facebook"
+               className="w-10 h-10 grid place-items-center rounded-full border-2 transition-transform hover:-translate-y-0.5"
+               style={{ borderColor: onSecondary, background: "rgba(255,255,255,0.08)" }}>
+              <FacebookIcon color={onSecondary}/>
+            </a>
+            <a href="https://www.instagram.com/techcrew4/" target="_blank" rel="noreferrer noopener" aria-label="Instagram"
+               className="w-10 h-10 grid place-items-center rounded-full border-2 transition-transform hover:-translate-y-0.5"
+               style={{ borderColor: onSecondary, background: "rgba(255,255,255,0.08)" }}>
+              <InstagramIcon color={onSecondary}/>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-12 pt-6 max-w-7xl mx-auto px-5 md:px-8 flex items-center justify-between flex-wrap gap-3 text-xs"
+           style={{ borderTop: `1px solid ${muted}`, color: muted }}>
+        <div className="flex items-center gap-3">
+          <Logo theme={theme} size={36}/>
+          <span>© 2026 Tech Crew · FLL C-325 · {t.footerBuilt}</span>
+        </div>
+        <div>{t.footerViewing} <span style={{ color: onSecondary, fontWeight: 700 }}>{season.name}</span> · {season.years}</div>
+      </div>
+    </footer>
+  );
+}
+
+/* ================================================================== */
+/*  Lightbox                                                           */
+/* ================================================================== */
+function Lightbox({ data, onClose, theme }){
+  useEffect(() => {
+    if (!data) return;
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [data, onClose]);
+
+  if (!data) return null;
+
+  const isVideo = data.type === "video";
+
+  return (
+    <div
+      className="lb-backdrop fixed inset-0 z-[70] grid place-items-center p-6"
+      style={{ background: "rgba(0,0,0,0.85)" }}
+      onClick={onClose}
+    >
+      <div className="relative max-w-5xl w-full" onClick={(e) => e.stopPropagation()}>
+        <button
+          onClick={onClose}
+          className="absolute -top-4 -right-4 w-10 h-10 rounded-full border-2 grid place-items-center font-bold text-lg z-10"
+          style={{ background: theme.primary, color: theme.ink, borderColor: theme.ink, boxShadow: `4px 4px 0 ${theme.ink}` }}
+          aria-label="Close"
+        >×</button>
+        <div className="rounded-2xl overflow-hidden border-2 bg-black grid place-items-center"
+             style={{ borderColor: theme.ink, boxShadow: `10px 10px 0 ${theme.ink}`, maxHeight: "78vh" }}>
+          {isVideo ? (
+            <video
+              src={data.src}
+              poster={data.poster}
+              controls
+              autoPlay
+              playsInline
+              className="block w-full h-auto max-h-[78vh]"
+            />
+          ) : (
+            <img
+              src={data.src}
+              alt={data.label}
+              className="block w-full h-auto max-h-[78vh] object-contain"
+            />
+          )}
+        </div>
+        <div className="mt-3 text-center font-mono text-xs" style={{ color: "white" }}>{data.label}</div>
+      </div>
+    </div>
+  );
+}
+
+/* ================================================================== */
+/*  App                                                                */
+/* ================================================================== */
+function App(){
+  const [active, setActive] = useState(SEASONS[3]); // default UNEARTHED (current season)
+  const [lang, setLang] = useState("ar");
+  const [view, setView] = useState("home"); // "home" | "message"
+  const [animKey, setAnimKey] = useState(0);
+  const [ripple, setRipple] = useState(null);
+  const [lightbox, setLightbox] = useState(null);
+  const theme = active.theme;
+  const t = I18N[lang];
+
+  const goHome = () => { setView("home"); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const goMessage = () => { setView("message"); window.scrollTo({ top: 0 }); };
+  const goSponsors = () => {
+    setView("home");
+    setTimeout(() => {
+      const el = document.getElementById("sponsors");
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }, 60);
+  };
+
+  // CSS variables
+  useEffect(() => {
+    const r = document.documentElement.style;
+    r.setProperty("--primary",   theme.primary);
+    r.setProperty("--secondary", theme.secondary);
+    r.setProperty("--accent",    theme.accent);
+    r.setProperty("--ink",       theme.ink);
+    r.setProperty("--panel",     theme.panel);
+  }, [theme]);
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = (lang === "ar") ? "rtl" : "ltr";
+  }, [lang]);
+
+  // Dynamic browser tab title
+  useEffect(() => {
+    document.title = `Tech Crew | ${active.name}`;
+  }, [active]);
+
+  // Dynamic favicon tint
+  useEffect(() => {
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='28' fill='${encodeURIComponent(theme.primary)}'/><circle cx='32' cy='32' r='14' fill='${encodeURIComponent(theme.ink)}'/></svg>`;
+    const link = document.getElementById("favicon");
+    if (link) link.href = `data:image/svg+xml;utf8,${svg}`;
+  }, [theme]);
+
+  const handleChange = (s, e) => {
+    const switchingView = view !== "home";
+    setView("home");
+    if (s.id === active.id && !switchingView) return;
+    if (e && e.currentTarget) {
+      const r = e.currentTarget.getBoundingClientRect();
+      setRipple({
+        x: r.left + r.width/2,
+        y: r.top + r.height/2,
+        color: s.theme.primary,
+        key: Date.now(),
+      });
+      window.setTimeout(() => setRipple(null), 850);
+    }
+    setActive(s);
+    setAnimKey((k) => k + 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  return (
+    <div id="top" className="theme-transition min-h-screen" style={{ background: theme.panel }}>
+      <Navbar active={active} onChange={handleChange} theme={theme} lang={lang} setLang={setLang} t={t}
+              view={view} onHome={goHome} onMessage={goMessage}/>
+
+      {view === "message" ? (
+        <VideoBanner key={"msg:" + lang} theme={theme} t={t} lang={lang} onSponsors={goSponsors}/>
+      ) : (
+        <>
+          <main key={animKey + ":" + lang} className="season-anim">
+            <Hero season={active} theme={theme} t={t} lang={lang} onImageClick={(item) => setLightbox(item)}/>
+            <About theme={theme} t={t} lang={lang}/>
+            <Achievements season={active} theme={theme} t={t} lang={lang}/>
+            <Robot   season={active} theme={theme} t={t} lang={lang} onImageClick={(item) => setLightbox(item)}/>
+            <Project season={active} theme={theme} t={t} lang={lang} onImageClick={(item) => setLightbox(item)}/>
+            <Team    season={active} theme={theme} t={t} lang={lang}/>
+            <Sponsors theme={theme} t={t} lang={lang}/>
+          </main>
+          <Footer season={active} theme={theme} t={t} lang={lang}/>
+        </>
+      )}
+
+      {ripple && (
+        <div
+          key={ripple.key}
+          className="ripple"
+          style={{
+            left: ripple.x - 5,
+            top:  ripple.y - 5,
+            background: ripple.color,
+          }}
+        />
+      )}
+
+      <Lightbox data={lightbox} onClose={() => setLightbox(null)} theme={theme}/>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
