@@ -162,8 +162,6 @@ const I18N = {
     sponsorsKicker: "05 · الشركاء",
     sponsorsTitle: "شكرًا لشركائنا",
     sponsorsSubtitle: "دعم Tech Crew هو استثمار في المستقبل والابتكار، وفي شبابٍ شغوفين بالتكنولوجيا.",
-    sponsorsSeason:  "شريك الموسم",
-    sponsorsCommon:  "شركاؤنا الدّائمون",
     footerViewing: "تستعرض الآن",
     footerBuilt: "موقع من إنجاز الفريق.",
     footerSponsorTitle: "كن شريكًا لنا",
@@ -219,8 +217,6 @@ const I18N = {
     sponsorsKicker: "05 · Partenaires",
     sponsorsTitle: "Merci à nos Partenaires",
     sponsorsSubtitle: "Soutenir Tech Crew, c'est investir dans l'avenir, l'innovation et la jeunesse passionnée par la technologie.",
-    sponsorsSeason:  "Partenaire de la saison",
-    sponsorsCommon:  "Nos partenaires",
     footerViewing: "Saison —",
     footerBuilt: "Site réalisé par l'équipe.",
     footerSponsorTitle: "Devenir Sponsor",
@@ -1795,10 +1791,10 @@ function Team({ season, theme, t, lang }){
 /* ================================================================== */
 /*  Sponsors — image-based, with a per-season "season partner" slot     */
 /* ================================================================== */
-function SponsorLogo({ s, theme, large=false }){
+function SponsorLogo({ s, theme }){
   const Inner = (
     <div
-      className={`sponsor-logo relative w-full ${large ? "h-32 sm:h-40 md:h-48" : "h-20 sm:h-24"} rounded-xl border-2 flex items-center justify-center bg-white p-4`}
+      className="sponsor-logo relative w-full h-32 sm:h-36 md:h-40 rounded-xl border-2 flex items-center justify-center bg-white p-5"
       style={{ borderColor: theme.primary, boxShadow: `4px 4px 0 ${theme.ink}` }}
     >
       <img
@@ -1817,33 +1813,18 @@ function SponsorLogo({ s, theme, large=false }){
 
 function Sponsors({ season, theme, t, lang }){
   const themeSponsor = THEME_SPONSORS[season.id];
+  const all = themeSponsor ? [...COMMON_SPONSORS, themeSponsor] : COMMON_SPONSORS;
   return (
     <section id="sponsors" data-screen-label="Sponsors" className="py-20 md:py-28 border-t-2"
              style={{ borderColor: theme.ink, background: theme.panel }}>
       <div className="max-w-7xl mx-auto px-5 md:px-8">
         <SectionHead kicker={t.sponsorsKicker} title={t.sponsorsTitle} theme={theme}/>
-        <p className="-mt-6 mb-14 max-w-3xl text-base md:text-lg" style={{ color: theme.ink, opacity:.78 }}>
+        <p className="-mt-6 mb-12 max-w-3xl text-base md:text-lg" style={{ color: theme.ink, opacity:.78 }}>
           {t.sponsorsSubtitle}
         </p>
 
-        {/* Season-specific partner */}
-        {themeSponsor && (
-          <div className="mb-14">
-            <div className="text-xs uppercase tracking-[0.22em] font-bold mb-4" style={{ color: theme.secondary }}>
-              {t.sponsorsSeason} · {season.name}
-            </div>
-            <div className="max-w-md">
-              <SponsorLogo s={themeSponsor} theme={theme} large/>
-            </div>
-          </div>
-        )}
-
-        {/* Common partners shown on every season */}
-        <div className="text-xs uppercase tracking-[0.22em] font-bold mb-4" style={{ color: theme.secondary }}>
-          {t.sponsorsCommon}
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {COMMON_SPONSORS.map((s, i) => <SponsorLogo key={i} s={s} theme={theme}/>)}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
+          {all.map((s, i) => <SponsorLogo key={i} s={s} theme={theme}/>)}
         </div>
       </div>
     </section>
