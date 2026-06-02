@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tech Crew — FLL C-325 · توندوت، المغرب</title>
 <link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='28' fill='%23D97706'/></svg>"/>
+<link rel="preload" as="image" href="./public/images/unearthed/main1.webp" fetchpriority="high"/>
+<link rel="preload" as="image" href="./public/images/logo-sm.webp"/>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -354,7 +356,7 @@ const SEASON_MEDIA = {
   superpowered: {
     team:    { type: "image", src: `./public/images/superpowered/main.jpg`, label: "Tech Crew · SUPERPOWERED" },
     robots: [
-      { type: "image", src: `./public/images/superpowered/robot1.jpg`, label: "الروبوت — لقطة كاملة",  span: "col-span-6", aspect: "aspect-[16/10]", shadow: true },
+      { type: "image", src: `./public/images/superpowered/robot1.webp`, label: "الروبوت — لقطة كاملة",  span: "col-span-6", aspect: "aspect-[16/10]", shadow: true },
       { type: "image", src: `./public/images/superpowered/robot2.jpg`, label: "الروبوت — تفصيل",        span: "col-span-3", aspect: "aspect-[4/3]"  },
       { type: "image", src: `./public/images/superpowered/robot3.jpg`, label: "الروبوت — الهيكل",       span: "col-span-3", aspect: "aspect-[4/3]"  },
     ],
@@ -370,26 +372,26 @@ const SEASON_MEDIA = {
       interval: 7000,
       label: "Tech Crew · MASTERPIECE",
       frames: [
-        { src: `./public/images/masterpiece/main1.jpg`, label: "Tech Crew · MASTERPIECE · 1" },
-        { src: `./public/images/masterpiece/main2.jpg`, label: "Tech Crew · MASTERPIECE · 2" },
-        { src: `./public/images/masterpiece/main3.jpg`, label: "Tech Crew · MASTERPIECE · 3" },
+        { src: `./public/images/masterpiece/main1.webp`, label: "Tech Crew · MASTERPIECE · 1" },
+        { src: `./public/images/masterpiece/main2.webp`, label: "Tech Crew · MASTERPIECE · 2" },
+        { src: `./public/images/masterpiece/main3.webp`, label: "Tech Crew · MASTERPIECE · 3" },
       ],
     },
     robots: [
-      { type: "image", src: `./public/images/masterpiece/robot1.png`, label: "الروبوت — لقطة كاملة",  span: "col-span-6", aspect: "aspect-[16/10]", shadow: true },
+      { type: "image", src: `./public/images/masterpiece/robot1.webp`, label: "الروبوت — لقطة كاملة",  span: "col-span-6", aspect: "aspect-[16/10]", shadow: true },
       { type: "image", src: `./public/images/masterpiece/robot2.jpg`, label: "الروبوت — تفصيل",        span: "col-span-3", aspect: "aspect-[4/3]"  },
       { type: "image", src: `./public/images/masterpiece/robot3.jpg`, label: "الروبوت — الهيكل",       span: "col-span-3", aspect: "aspect-[4/3]"  },
     ],
     projects: [
       { type: "image", src: `./public/images/masterpiece/project1.jpg`, label: "Backstage — المسرح المتحرّك", span: "col-span-6", aspect: "aspect-[16/9]", shadow: true },
-      { type: "image", src: `./public/images/masterpiece/project2.jpg`, label: "Backstage — تفاصيل الإلكترونيات", span: "col-span-3", aspect: "aspect-[4/3]" },
-      { type: "image", src: `./public/images/masterpiece/project3.jpg`, label: "Backstage — العرض",      span: "col-span-3", aspect: "aspect-[4/3]" },
+      { type: "image", src: `./public/images/masterpiece/project2.webp`, label: "Backstage — تفاصيل الإلكترونيات", span: "col-span-3", aspect: "aspect-[4/3]" },
+      { type: "image", src: `./public/images/masterpiece/project3.webp`, label: "Backstage — العرض",      span: "col-span-3", aspect: "aspect-[4/3]" },
     ],
   },
   submerged: {
     team:    { type: "image", src: `./public/images/submerged/team.jpg`, label: "team photo · submerged" },
     robots: [
-      { type: "image", src: `./public/images/submerged/robot1.jpg`,
+      { type: "image", src: `./public/images/submerged/robot1.webp`,
         label: "NassBOT — full view",
         span: "col-span-6", aspect: "aspect-[16/10]", shadow: true },
       { type: "video", src: `./public/images/submerged/robot2-web.mp4`,
@@ -419,9 +421,9 @@ const SEASON_MEDIA = {
       interval: 7000,
       label: "Tech Crew · UNEARTHED",
       frames: [
-        { src: `./public/images/unearthed/main1.jpg`, label: "Tech Crew · UNEARTHED · 1" },
-        { src: `./public/images/unearthed/main2.jpg`, label: "Tech Crew · UNEARTHED · 2" },
-        { src: `./public/images/unearthed/main3.jpg`, label: "Tech Crew · UNEARTHED · 3" },
+        { src: `./public/images/unearthed/main1.webp`, label: "Tech Crew · UNEARTHED · 1" },
+        { src: `./public/images/unearthed/main2.webp`, label: "Tech Crew · UNEARTHED · 2" },
+        { src: `./public/images/unearthed/main3.webp`, label: "Tech Crew · UNEARTHED · 3" },
       ],
     },
     robots: [
@@ -444,7 +446,7 @@ const SEASON_MEDIA = {
       { type: "image", src: `./public/images/unearthed/project2.jpg`,
         label: "ArtiVault — sensor / Peltier detail",
         span: "col-span-3", aspect: "aspect-[4/3]" },
-      { type: "image", src: `./public/images/unearthed/project3.jpg`,
+      { type: "image", src: `./public/images/unearthed/project3.webp`,
         label: "ArtiVault — field test",
         span: "col-span-3", aspect: "aspect-[4/3]" },
     ],
@@ -706,24 +708,24 @@ const SEASON_TEAMS = {
 /* Sponsors shown on every season. Each entry: { src, url? }.
    Add a `url` to make a logo clickable to the sponsor's site. */
 const COMMON_SPONSORS = [
-  { src: "./public/sponsors/1.jpeg" },
-  { src: "./public/sponsors/2.png"  },
-  { src: "./public/sponsors/3.png"  },
-  { src: "./public/sponsors/4.png"  },
-  { src: "./public/sponsors/5.png"  },
-  { src: "./public/sponsors/6.png"  },
-  { src: "./public/sponsors/7.png"  },
-  { src: "./public/sponsors/8.png"  },
-  { src: "./public/sponsors/9.png"  },
-  { src: "./public/sponsors/10.png" },
+  { src: "./public/sponsors/1.webp"  },
+  { src: "./public/sponsors/2.webp"  },
+  { src: "./public/sponsors/3.webp"  },
+  { src: "./public/sponsors/4.webp"  },
+  { src: "./public/sponsors/5.webp"  },
+  { src: "./public/sponsors/6.webp"  },
+  { src: "./public/sponsors/7.webp"  },
+  { src: "./public/sponsors/8.webp"  },
+  { src: "./public/sponsors/9.webp"  },
+  { src: "./public/sponsors/10.webp" },
 ];
 
 /* One extra "season partner" logo per season (file named after the theme). */
 const THEME_SPONSORS = {
-  superpowered: { src: "./public/sponsors/theme/superpower.png" },
-  masterpiece:  { src: "./public/sponsors/theme/masterpiece.jpg" },
-  submerged:    { src: "./public/sponsors/theme/submerged.png"  },
-  unearthed:    { src: "./public/sponsors/theme/unearthed.png"  },
+  superpowered: { src: "./public/sponsors/theme/superpower.png"  }, // 12 KB png — already tiny, kept as PNG
+  masterpiece:  { src: "./public/sponsors/theme/masterpiece.jpg" }, // small jpg — kept as JPG
+  submerged:    { src: "./public/sponsors/theme/submerged.webp"  },
+  unearthed:    { src: "./public/sponsors/theme/unearthed.webp"  },
 };
 
 /* ================================================================== */
@@ -742,7 +744,7 @@ function Logo({ theme, size=50 }){
       aria-label="Tech Crew logo"
     >
       <img
-        src="./public/images/logo-sm.png"
+        src="./public/images/logo-sm.webp"
         alt="Tech Crew"
         style={{ width: "100%", height: "100%", objectFit: "contain" }}
         onError={(e) => {

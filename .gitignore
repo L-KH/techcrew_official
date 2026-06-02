@@ -16,6 +16,10 @@ build/
 # old design artifacts from the initial zip
 _extracted/
 
+# internal build/process scripts — not for deploy
+_tools/
+__pycache__/
+
 # logs
 *.log
 npm-debug.log*
