@@ -162,7 +162,8 @@ const I18N = {
     sponsorsKicker: "05 · الشركاء",
     sponsorsTitle: "شكرًا لشركائنا",
     sponsorsSubtitle: "دعم Tech Crew هو استثمار في المستقبل والابتكار، وفي شبابٍ شغوفين بالتكنولوجيا.",
-    sponsorSlot: "شعارك هنا",
+    sponsorsSeason:  "شريك الموسم",
+    sponsorsCommon:  "شركاؤنا الدّائمون",
     footerViewing: "تستعرض الآن",
     footerBuilt: "موقع من إنجاز الفريق.",
     footerSponsorTitle: "كن شريكًا لنا",
@@ -218,7 +219,8 @@ const I18N = {
     sponsorsKicker: "05 · Partenaires",
     sponsorsTitle: "Merci à nos Partenaires",
     sponsorsSubtitle: "Soutenir Tech Crew, c'est investir dans l'avenir, l'innovation et la jeunesse passionnée par la technologie.",
-    sponsorSlot: "Votre logo ici",
+    sponsorsSeason:  "Partenaire de la saison",
+    sponsorsCommon:  "Nos partenaires",
     footerViewing: "Saison —",
     footerBuilt: "Site réalisé par l'équipe.",
     footerSponsorTitle: "Devenir Sponsor",
@@ -705,14 +707,28 @@ const SEASON_TEAMS = {
 
 /* Sponsor tiers — leave one slot per tier for the coach to fill.
    Each entry: { name, url } where url can be "" for placeholder. */
-/* Flat sponsor list — add partners one by one.
-   Each: { name, url } — url can be "" for a non-clickable logo. */
-const SPONSORS = [
-  { name: "TODO: شريك 1", url: "" },
-  { name: "TODO: شريك 2", url: "" },
-  { name: "TODO: شريك 3", url: "" },
-  { name: "TODO: شريك 4", url: "" },
+/* Sponsors shown on every season. Each entry: { src, url? }.
+   Add a `url` to make a logo clickable to the sponsor's site. */
+const COMMON_SPONSORS = [
+  { src: "./public/sponsors/1.jpeg" },
+  { src: "./public/sponsors/2.png"  },
+  { src: "./public/sponsors/3.png"  },
+  { src: "./public/sponsors/4.png"  },
+  { src: "./public/sponsors/5.png"  },
+  { src: "./public/sponsors/6.png"  },
+  { src: "./public/sponsors/7.png"  },
+  { src: "./public/sponsors/8.png"  },
+  { src: "./public/sponsors/9.png"  },
+  { src: "./public/sponsors/10.png" },
 ];
+
+/* One extra "season partner" logo per season (file named after the theme). */
+const THEME_SPONSORS = {
+  superpowered: { src: "./public/sponsors/theme/superpower.png" },
+  masterpiece:  { src: "./public/sponsors/theme/masterpiece.jpg" },
+  submerged:    { src: "./public/sponsors/theme/submerged.png"  },
+  unearthed:    { src: "./public/sponsors/theme/unearthed.png"  },
+};
 
 /* ================================================================== */
 /*  Atoms                                                              */
@@ -1692,9 +1708,6 @@ function CoachCard({ coach, theme, lang, variant }){
         <a href={`mailto:${coach.email}`} className="block mt-1 text-xs underline decoration-dotted" style={{ color: theme.ink }}>
           {coach.email}
         </a>
-        <a href={`tel:${coach.phoneIntl.replace(/\s/g,"")}`} className="block text-xs" style={{ color: theme.ink, opacity:.7 }}>
-          {coach.phone}
-        </a>
       </div>
     </article>
   );
@@ -1780,24 +1793,21 @@ function Team({ season, theme, t, lang }){
 }
 
 /* ================================================================== */
-/*  Sponsors — single uniform grid, add partners one by one            */
+/*  Sponsors — image-based, with a per-season "season partner" slot     */
 /* ================================================================== */
-function SponsorCard({ s, theme, t }){
-  const isPlaceholder = !s.url || s.name.startsWith("TODO");
+function SponsorLogo({ s, theme, large=false }){
   const Inner = (
     <div
-      className="sponsor-logo h-24 sm:h-28 px-5 w-full rounded-xl border-2 flex items-center justify-center bg-white"
+      className={`sponsor-logo relative w-full ${large ? "h-32 sm:h-40 md:h-48" : "h-20 sm:h-24"} rounded-xl border-2 flex items-center justify-center bg-white p-4`}
       style={{ borderColor: theme.primary, boxShadow: `4px 4px 0 ${theme.ink}` }}
-      title={s.name}
     >
-      <div className="flex items-center gap-3 text-center">
-        <div className="w-12 h-12 rounded-md shrink-0"
-             style={{ background: theme.primary, outline:`2px solid ${theme.ink}` }}/>
-        <div className="font-display font-bold text-sm sm:text-base leading-tight"
-             style={{ color: theme.ink }}>
-          {isPlaceholder ? t.sponsorSlot : s.name}
-        </div>
-      </div>
+      <img
+        src={s.src}
+        alt=""
+        loading="lazy"
+        className="max-w-full max-h-full object-contain block"
+        onError={(e) => { e.currentTarget.style.display = "none"; }}
+      />
     </div>
   );
   return s.url
@@ -1805,7 +1815,8 @@ function SponsorCard({ s, theme, t }){
     : Inner;
 }
 
-function Sponsors({ theme, t, lang }){
+function Sponsors({ season, theme, t, lang }){
+  const themeSponsor = THEME_SPONSORS[season.id];
   return (
     <section id="sponsors" data-screen-label="Sponsors" className="py-20 md:py-28 border-t-2"
              style={{ borderColor: theme.ink, background: theme.panel }}>
@@ -1815,8 +1826,24 @@ function Sponsors({ theme, t, lang }){
           {t.sponsorsSubtitle}
         </p>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
-          {SPONSORS.map((s, i) => <SponsorCard key={i} s={s} theme={theme} t={t}/>)}
+        {/* Season-specific partner */}
+        {themeSponsor && (
+          <div className="mb-14">
+            <div className="text-xs uppercase tracking-[0.22em] font-bold mb-4" style={{ color: theme.secondary }}>
+              {t.sponsorsSeason} · {season.name}
+            </div>
+            <div className="max-w-md">
+              <SponsorLogo s={themeSponsor} theme={theme} large/>
+            </div>
+          </div>
+        )}
+
+        {/* Common partners shown on every season */}
+        <div className="text-xs uppercase tracking-[0.22em] font-bold mb-4" style={{ color: theme.secondary }}>
+          {t.sponsorsCommon}
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {COMMON_SPONSORS.map((s, i) => <SponsorLogo key={i} s={s} theme={theme}/>)}
         </div>
       </div>
     </section>
@@ -1867,9 +1894,6 @@ function Footer({ season, theme, t, lang }){
                 <div className="text-xs uppercase tracking-[0.18em] mb-2" style={{ color: muted }}>{lang === "ar" ? c.roleAR : c.roleFR}</div>
                 <a href={`mailto:${c.email}`} className="flex items-center gap-2 text-sm" style={{ color: onSecondary }}>
                   <MailIcon color={onSecondary}/> {c.email}
-                </a>
-                <a href={`tel:${c.phoneIntl.replace(/\s/g,"")}`} className="flex items-center gap-2 text-sm mt-0.5" style={{ color: onSecondary }}>
-                  <PhoneIcon color={onSecondary}/> {c.phone}
                 </a>
               </div>
             ))}
@@ -2044,7 +2068,7 @@ function App(){
             <Robot   season={active} theme={theme} t={t} lang={lang} onImageClick={(item) => setLightbox(item)}/>
             <Project season={active} theme={theme} t={t} lang={lang} onImageClick={(item) => setLightbox(item)}/>
             <Team    season={active} theme={theme} t={t} lang={lang}/>
-            <Sponsors theme={theme} t={t} lang={lang}/>
+            <Sponsors season={active} theme={theme} t={t} lang={lang}/>
           </main>
           <Footer season={active} theme={theme} t={t} lang={lang}/>
         </>
