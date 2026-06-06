@@ -101,11 +101,13 @@
     50%    { box-shadow: 0 0 0 2px var(--ink), 0 0 22px 6px color-mix(in oklab, var(--primary) 92%, transparent); }
   }
 
-  /* seamless scrolling ticker — two identical halves, translate by -50% */
-  .marquee-track{ display:flex; width:max-content; will-change: transform; animation: marquee 28s linear infinite; }
+  /* seamless scrolling ticker — two identical halves, translate by -50%.
+     Forced LTR so it loops continuously even on the RTL (Arabic) page. */
+  .marquee-track{ display:flex; direction:ltr; width:max-content; will-change: transform; animation: marquee 28s linear infinite; }
   .marquee-track:hover{ animation-play-state: paused; }
   .marquee-group{ display:flex; align-items:center; flex:0 0 auto; }
-  @keyframes marquee { from { transform: translate3d(0,0,0); } to { transform: translate3d(-50%,0,0); } }
+  .marquee-group > span{ flex:0 0 auto; }
+  @keyframes marquee { 0% { transform: translate3d(0,0,0); } 100% { transform: translate3d(-50%,0,0); } }
   @media (prefers-reduced-motion: reduce){ .marquee-track{ animation: none; } }
 
   /* hero slideshow cross-fade — backdrop fills, foreground stays uncropped */
