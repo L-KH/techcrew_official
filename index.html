@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tech Crew — FLL C-325 · توندوت، المغرب</title>
 <link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='28' fill='%23D97706'/></svg>"/>
-<link rel="preload" as="image" href="./public/images/unearthed/main1.webp" fetchpriority="high"/>
+<link rel="preload" as="image" href="./public/images/unearthed/main1-thumb.webp" fetchpriority="high"/>
 <link rel="preload" as="image" href="./public/images/logo-sm.webp"/>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -797,6 +797,14 @@ function PlaceholderSVG({ w, h, label, theme }){
   );
 }
 
+/* Map a full image path to its lightweight display thumbnail
+   (e.g. ".../main1.webp" -> ".../main1-thumb.webp"). The page loads the thumb;
+   the lightbox loads the original full-res file on click. */
+function thumbSrc(src){
+  if (!src) return src;
+  return src.replace(/\.(webp|jpe?g|png)$/i, "-thumb.webp");
+}
+
 /* SmartImg — tries the given path first, falls back to a themed placeholder.
    The moment the coach drops a real file at the expected path, it shows up. */
 function SmartImg({ src, w, h, label, theme, onClick, alt }){
@@ -821,11 +829,18 @@ function SmartImg({ src, w, h, label, theme, onClick, alt }){
   );
 }
 
-/* SmartMedia — renders an image, or a hover-to-play muted-loop video. */
+/* SmartMedia — renders an image, or a hover-to-play muted-loop video.
+   Images display a lightweight thumbnail; falling back to the full file, then a
+   themed placeholder if neither exists. Lightbox always gets the full original. */
 function SmartMedia({ item, w, h, theme, onClick }){
   const [failed, setFailed] = useState(false);
+  // for images: start at the thumb, drop to full on first error, placeholder on second
+  const [imgSrc, setImgSrc] = useState(() => item && item.src ? thumbSrc(item.src) : null);
   const videoRef = useRef(null);
-  useEffect(() => { setFailed(false); }, [item && item.src]);
+  useEffect(() => {
+    setFailed(false);
+    setImgSrc(item && item.src ? thumbSrc(item.src) : null);
+  }, [item && item.src]);
 
   if (!item || !item.src || failed) {
     return (
@@ -869,11 +884,15 @@ function SmartMedia({ item, w, h, theme, onClick }){
 
   return (
     <img
-      src={item.src}
+      src={imgSrc}
       alt={item.label}
+      loading="lazy"
       className="w-full h-full object-cover block"
       style={{ cursor: onClick ? "zoom-in" : "default" }}
-      onError={() => setFailed(true)}
+      onError={() => {
+        if (imgSrc !== item.src) setImgSrc(item.src); // thumb missing → try full file
+        else setFailed(true);                          // full missing → placeholder
+      }}
       onClick={onClick}
     />
   );
@@ -979,6 +998,7 @@ function BrilliantTrophy({ size=44 }){
 function HeroSlideshow({ frames, interval=7000, theme, onClick }){
   const [idx, setIdx] = useState(0);
   const [errored, setErrored] = useState({});
+  const [useFull, setUseFull] = useState({}); // per-frame: thumb failed → load full file
   useEffect(() => { setIdx(0); }, [frames]);
   useEffect(() => {
     if (!frames || frames.length <= 1) return;
@@ -993,23 +1013,30 @@ function HeroSlideshow({ frames, interval=7000, theme, onClick }){
   return (
     <div className="relative w-full h-full overflow-hidden" onClick={handleClick}
          style={{ cursor: onClick ? "zoom-in" : "default", background: theme.ink }}>
-      {frames.map((frame, i) => (
-        <div
-          key={i}
-          className="slide"
-          style={{ opacity: idx === i && !errored[i] ? 1 : 0 }}
-        >
-          {/* blurred backdrop fills the box edge-to-edge */}
-          <img src={frame.src} alt="" aria-hidden className="slide-backdrop"/>
-          {/* full, uncropped photo on top */}
-          <img
-            src={frame.src}
-            alt={frame.label || ""}
-            className="slide-main"
-            onError={() => setErrored(prev => ({ ...prev, [i]: true }))}
-          />
-        </div>
-      ))}
+      {frames.map((frame, i) => {
+        const shown = useFull[i] ? frame.src : thumbSrc(frame.src);
+        return (
+          <div
+            key={i}
+            className="slide"
+            style={{ opacity: idx === i && !errored[i] ? 1 : 0 }}
+          >
+            {/* blurred backdrop fills the box edge-to-edge */}
+            <img src={shown} alt="" aria-hidden className="slide-backdrop"/>
+            {/* uncropped photo on top */}
+            <img
+              src={shown}
+              alt={frame.label || ""}
+              loading={i === 0 ? "eager" : "lazy"}
+              className="slide-main"
+              onError={() => {
+                if (!useFull[i]) setUseFull(prev => ({ ...prev, [i]: true })); // thumb missing → full
+                else setErrored(prev => ({ ...prev, [i]: true }));             // full missing → hide
+              }}
+            />
+          </div>
+        );
+      })}
       {/* dot indicators */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
         {frames.map((_, i) => (
@@ -1913,8 +1940,12 @@ function Footer({ season, theme, t, lang }){
 /*  Lightbox                                                           */
 /* ================================================================== */
 function Lightbox({ data, onClose, theme }){
+  // start from the (already-cached) thumbnail for an instant open, then upgrade
+  // to the full-res original once it finishes downloading.
+  const [hiRes, setHiRes] = useState(false);
   useEffect(() => {
     if (!data) return;
+    setHiRes(false);
     const onKey = (e) => { if (e.key === "Escape") onClose(); };
     document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
@@ -1927,6 +1958,7 @@ function Lightbox({ data, onClose, theme }){
   if (!data) return null;
 
   const isVideo = data.type === "video";
+  const imgSrc = isVideo ? null : (hiRes ? data.src : thumbSrc(data.src));
 
   return (
     <div
@@ -1953,11 +1985,17 @@ function Lightbox({ data, onClose, theme }){
               className="block w-full h-auto max-h-[78vh]"
             />
           ) : (
-            <img
-              src={data.src}
-              alt={data.label}
-              className="block w-full h-auto max-h-[78vh] object-contain"
-            />
+            <>
+              {/* hidden full-res loader: when ready, swap the visible img to it */}
+              <img src={data.src} alt="" aria-hidden style={{ display: "none" }}
+                   onLoad={() => setHiRes(true)} onError={() => setHiRes(true)}/>
+              <img
+                src={imgSrc}
+                alt={data.label}
+                className="block w-full h-auto max-h-[78vh] object-contain transition-[filter] duration-300"
+                style={{ filter: hiRes ? "none" : "blur(0.5px)" }}
+              />
+            </>
           )}
         </div>
         <div className="mt-3 text-center font-mono text-xs" style={{ color: "white" }}>{data.label}</div>
