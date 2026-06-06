@@ -101,6 +101,13 @@
     50%    { box-shadow: 0 0 0 2px var(--ink), 0 0 22px 6px color-mix(in oklab, var(--primary) 92%, transparent); }
   }
 
+  /* seamless scrolling ticker — two identical halves, translate by -50% */
+  .marquee-track{ display:flex; width:max-content; will-change: transform; animation: marquee 28s linear infinite; }
+  .marquee-track:hover{ animation-play-state: paused; }
+  .marquee-group{ display:flex; align-items:center; flex:0 0 auto; }
+  @keyframes marquee { from { transform: translate3d(0,0,0); } to { transform: translate3d(-50%,0,0); } }
+  @media (prefers-reduced-motion: reduce){ .marquee-track{ animation: none; } }
+
   /* hero slideshow cross-fade — backdrop fills, foreground stays uncropped */
   .slide{ position: absolute; inset: 0; transition: opacity 1200ms cubic-bezier(.4,0,.2,1); }
   .slide-backdrop{ position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.15); filter: blur(28px) brightness(0.85); }
@@ -167,7 +174,7 @@ const I18N = {
     footerViewing: "تستعرض الآن",
     footerBuilt: "موقع من إنجاز الفريق.",
     footerSponsorTitle: "كن شريكًا لنا",
-    footerSponsorCopy:  "انضمّ إلينا لدعم مبتكرين شباب! تبدأ صيغ الشراكة من 500 درهم. شعارك على روبوتنا، قمصاننا، ملصقاتنا، موقعنا، وعلى شبكاتنا الاجتماعية.",
+    footerSponsorCopy:  "انضمّ إلينا لدعم مبتكرين شباب! شعارك على روبوتنا، قمصاننا، ملصقاتنا، موقعنا، وعلى شبكاتنا الاجتماعية.",
     footerSponsorBtn:   "تحميل ملف الشراكة",
     footerContactTitle: "تواصلوا معنا",
     todo: "للملء",
@@ -222,7 +229,7 @@ const I18N = {
     footerViewing: "Saison —",
     footerBuilt: "Site réalisé par l'équipe.",
     footerSponsorTitle: "Devenir Sponsor",
-    footerSponsorCopy:  "Rejoignez-nous pour soutenir de jeunes innovateurs ! Les formules démarrent à 500 MAD. Votre logo sur notre robot, t-shirts, affiches, site web et réseaux sociaux.",
+    footerSponsorCopy:  "Rejoignez-nous pour soutenir de jeunes innovateurs ! Votre logo sur notre robot, t-shirts, affiches, site web et réseaux sociaux.",
     footerSponsorBtn:   "Télécharger le Dossier de Sponsoring",
     footerContactTitle: "Contactez-nous",
     todo: "À COMPLÉTER",
@@ -340,7 +347,7 @@ const SEASONS = [
         { title: "🏆 Prix Coach Mentor (National)", note: "Prix Coach Mentor décerné à la Compétition Nationale — reconnaissance de la qualité de l'encadrement de Tech Crew.", highlight: true },
       ],
     },
-    robot: { name: "TODO: Robot Name" },
+    robot: { name: "Our Robot" },
     project: {
       ar: { title: "ArtiVault — كبسولة ذكية للقطع الأثرية الهشّة" },
       fr: { title: "ArtiVault — une capsule intelligente pour artefacts fragiles" },
@@ -585,37 +592,37 @@ const PROJECT_COPY = {
 /*  Coaches & members — keyed by season since rosters change yearly    */
 /* ================================================================== */
 const SUBMERGED_COACHES = [
-  { name: "Abderrazzak El Ouardy", roleAR: "المؤطّر الرئيسي", roleFR: "Coach principal", gender: "m",
+  { name: "Abderrazzak El Ouardy", roleAR: "المؤطّر 1", roleFR: "Coach 1", gender: "m",
     email: "abduelouardy@gmail.com",   phone: "0618604127", phoneIntl: "+212 618 60 41 27" },
-  { name: "Lahcen Khaddaoui",      roleAR: "المؤطّر المساعد", roleFR: "Co-Coach",        gender: "m",
+  { name: "Lahcen Khaddaoui",      roleAR: "المؤطّر 2", roleFR: "Coach 2",        gender: "m",
     email: "lahcenkhddaoui@gmail.com", phone: "0615672066", phoneIntl: "+212 615 67 20 66" },
 ];
 
 const TODO_COACHES = [
-  { name: "TODO: Coach 1 name",     roleAR: "المؤطّر الرئيسي", roleFR: "Coach principal", gender: "m",
+  { name: "TODO: Coach 1 name",     roleAR: "المؤطّر 1", roleFR: "Coach 1", gender: "m",
     email: "todo@example.com", phone: "TODO", phoneIntl: "TODO" },
-  { name: "TODO: Coach 2 name",     roleAR: "المؤطّر المساعد", roleFR: "Co-Coach",        gender: "m",
+  { name: "TODO: Coach 2 name",     roleAR: "المؤطّر 2", roleFR: "Coach 2",        gender: "m",
     email: "todo@example.com", phone: "TODO", phoneIntl: "TODO" },
 ];
 
 const UNEARTHED_COACHES = [
-  { name: "Lahcen Khaddaoui",   roleAR: "المؤطّر الرئيسي", roleFR: "Coach principal", gender: "m",
+  { name: "Lahcen Khaddaoui",   roleAR: "المؤطّر 1", roleFR: "Coach 1", gender: "m",
     email: "lahcenkhddaoui@gmail.com", phone: "0615672066", phoneIntl: "+212 615 67 20 66" },
-  { name: "Fatiha Ait El Kadi", roleAR: "المؤطّرة المساعدة", roleFR: "Co-Coach",        gender: "f",
+  { name: "Fatiha Ait El Kadi", roleAR: "المؤطّرة 2", roleFR: "Coach 2",        gender: "f",
     email: "fa.aitelkadi@gmail.com",   phone: "0603835026", phoneIntl: "+212 603 83 50 26" },
 ];
 
 const MASTERPIECE_COACHES = [
-  { name: "Mohamed Ajguernoun",    roleAR: "المؤطّر الرئيسي", roleFR: "Coach principal", gender: "m",
+  { name: "Mohamed Ajguernoun",    roleAR: "المؤطّر 1", roleFR: "Coach 1", gender: "m",
     email: "todo@example.com", phone: "TODO", phoneIntl: "TODO" },
-  { name: "Abderrazzak El Ouardy", roleAR: "المؤطّر المساعد", roleFR: "Co-Coach",        gender: "m",
+  { name: "Abderrazzak El Ouardy", roleAR: "المؤطّر 2", roleFR: "Coach 2",        gender: "m",
     email: "abduelouardy@gmail.com", phone: "0618604127", phoneIntl: "+212 618 60 41 27" },
 ];
 
 const SUPERPOWERED_COACHES = [
-  { name: "Mohamed Ajguernoun", roleAR: "المؤطّر الرئيسي",  roleFR: "Coach principal", gender: "m",
+  { name: "Mohamed Ajguernoun", roleAR: "المؤطّر 1",  roleFR: "Coach 1", gender: "m",
     email: "todo@example.com", phone: "TODO", phoneIntl: "TODO" },
-  { name: "Siham El Morid",     roleAR: "المؤطّرة المساعدة", roleFR: "Co-Coach",        gender: "f",
+  { name: "Siham El Morid",     roleAR: "المؤطّرة 2", roleFR: "Coach 2",        gender: "f",
     email: "todo@example.com", phone: "TODO", phoneIntl: "TODO" },
 ];
 
@@ -1304,14 +1311,18 @@ function Hero({ season, theme, t, lang, onImageClick }){
 
       <div className="relative border-t-2 border-b-2 py-2 overflow-hidden"
            style={{ borderColor: theme.ink, background: theme.primary }}>
-        <div className="flex gap-10 whitespace-nowrap font-display font-bold uppercase tracking-[0.18em]"
+        <div className="marquee-track font-display font-bold uppercase tracking-[0.18em] text-sm"
              style={{ color: theme.ink }}>
-          {Array.from({length:8}).map((_,i) => (
-            <span key={i} className="inline-flex items-center gap-10 text-sm">
-              <span>Tech Crew</span><span>◆</span>
-              <span>{season.name}</span><span>◆</span>
-              <span>FLL C-325</span><span>◆</span>
-            </span>
+          {[0,1].map(half => (
+            <div key={half} className="marquee-group" aria-hidden={half === 1}>
+              {Array.from({length:6}).map((_,i) => (
+                <span key={i} className="inline-flex items-center">
+                  <span className="px-6">Tech Crew</span><span>◆</span>
+                  <span className="px-6">{season.name}</span><span>◆</span>
+                  <span className="px-6">FLL C-325</span><span>◆</span>
+                </span>
+              ))}
+            </div>
           ))}
         </div>
       </div>
