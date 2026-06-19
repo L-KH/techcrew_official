@@ -1165,13 +1165,15 @@ function Navbar({ active, onChange, theme, lang, setLang, t, view, onHome, onMes
   const onMsgPage = view === "message";
 
   useLayoutEffect(() => {
-    const btn = btnRefs.current[active.id];
-    const parent = navRef.current;
-    if (btn && parent) {
-      const pr = parent.getBoundingClientRect();
-      const br = btn.getBoundingClientRect();
-      setIndicator({ x: br.left - pr.left, w: br.width, visible: true });
-    }
+    const measure = () => {
+      const btn = btnRefs.current[active.id];
+      if (btn) setIndicator({ x: btn.offsetLeft, w: btn.offsetWidth, visible: true });
+    };
+    measure();
+    // re-measure after fonts settle and on resize so it stays aligned (LTR + RTL)
+    const id = window.setTimeout(measure, 120);
+    window.addEventListener("resize", measure);
+    return () => { window.clearTimeout(id); window.removeEventListener("resize", measure); };
   }, [active.id, lang, view]);
 
   return (
@@ -1239,6 +1241,8 @@ function Navbar({ active, onChange, theme, lang, setLang, t, view, onHome, onMes
                 aria-hidden
                 className="nav-underline absolute bottom-1 h-1 rounded-full pointer-events-none"
                 style={{
+                  left: 0,
+                  right: "auto",
                   width: indicator.w,
                   transform: `translateX(${indicator.x}px)`,
                   background: theme.secondary,
