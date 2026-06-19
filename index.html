@@ -110,6 +110,21 @@
   @keyframes marquee { 0% { transform: translate3d(0,0,0); } 100% { transform: translate3d(-50%,0,0); } }
   @media (prefers-reduced-motion: reduce){ .marquee-track{ animation: none; } }
 
+  /* audio player equalizer bars */
+  .eq{ display:inline-flex; align-items:flex-end; gap:3px; height:20px; }
+  .eq i{ width:3px; height:30%; background: currentColor; border-radius:3px; transform-origin:bottom; }
+  .eq.playing i{ animation: eqBar .9s ease-in-out infinite; }
+  .eq i:nth-child(1){ animation-delay:0s }
+  .eq i:nth-child(2){ animation-delay:.18s }
+  .eq i:nth-child(3){ animation-delay:.36s }
+  .eq i:nth-child(4){ animation-delay:.54s }
+  .eq i:nth-child(5){ animation-delay:.12s }
+  @keyframes eqBar { 0%,100%{ height:25%; } 50%{ height:100%; } }
+  /* soft pulsing ring around the play button while playing */
+  @keyframes playPulse { 0%{ box-shadow:0 0 0 0 var(--pulse); } 70%{ box-shadow:0 0 0 12px transparent; } 100%{ box-shadow:0 0 0 0 transparent; } }
+  .playing-pulse{ animation: playPulse 1.8s ease-out infinite; }
+  @media (prefers-reduced-motion: reduce){ .eq.playing i, .playing-pulse{ animation:none; } }
+
   /* hero slideshow cross-fade — backdrop fills, foreground stays uncropped */
   .slide{ position: absolute; inset: 0; transition: opacity 1200ms cubic-bezier(.4,0,.2,1); }
   .slide-backdrop{ position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.15); filter: blur(28px) brightness(0.85); }
@@ -170,7 +185,13 @@ const I18N = {
     teamTitle: "أعضاء الفريق",
     teamCoaches: "المؤطّرون",
     teamStudents: "التلاميذ",
-    sponsorsKicker: "05 · الشركاء",
+    anthemKicker: "05 · شارة الموسم",
+    anthemTitle: "شارة الموسم",
+    anthemSubtitle: "النشيد الذي نردّده معًا في طريقنا إلى المنافسة — حماسٌ يرافق الفريق في كلّ رحلة.",
+    anthemTrack: "النشيد",
+    creditLyrics: "كلمات و إخراج : الأستاذ إدريس المهراوي",
+    creditVoice: "الصوت : ذكاء اصطناعي",
+    sponsorsKicker: "06 · الشركاء",
     sponsorsTitle: "شكرًا لشركائنا",
     sponsorsSubtitle: "دعم Tech Crew هو استثمار في المستقبل والابتكار، وفي شبابٍ شغوفين بالتكنولوجيا.",
     footerViewing: "تستعرض الآن",
@@ -225,7 +246,13 @@ const I18N = {
     teamTitle: "Les Membres",
     teamCoaches: "Coachs",
     teamStudents: "Membres étudiants",
-    sponsorsKicker: "05 · Partenaires",
+    anthemKicker: "05 · Hymne de la saison",
+    anthemTitle: "Hymne de la saison",
+    anthemSubtitle: "Le chant que nous reprenons ensemble sur la route de la compétition — l'énergie qui accompagne l'équipe à chaque voyage.",
+    anthemTrack: "Hymne",
+    creditLyrics: "Paroles & réalisation : M. Driss El Mehraoui",
+    creditVoice: "Voix : Intelligence artificielle",
+    sponsorsKicker: "06 · Partenaires",
     sponsorsTitle: "Merci à nos Partenaires",
     sponsorsSubtitle: "Soutenir Tech Crew, c'est investir dans l'avenir, l'innovation et la jeunesse passionnée par la technologie.",
     footerViewing: "Saison —",
@@ -737,6 +764,19 @@ const THEME_SPONSORS = {
   unearthed:    { src: "./public/sponsors/theme/unearthed.webp"  },
 };
 
+/* Season anthems (شارة الموسم) — streamed on click. Seasons not listed here
+   simply hide the anthem section. */
+const SEASON_SONGS = {
+  submerged: [
+    { src: "./public/song/submerged_1.mp3" },
+    { src: "./public/song/submerged_2.mp3" },
+  ],
+  unearthed: [
+    { src: "./public/song/unearthed_1.mp3" },
+    { src: "./public/song/unearthed_2.mp3" },
+  ],
+};
+
 /* ================================================================== */
 /*  Atoms                                                              */
 /* ================================================================== */
@@ -1169,7 +1209,7 @@ function Navbar({ active, onChange, theme, lang, setLang, t, view, onHome, onMes
           </button>
           <nav
             ref={navRef}
-            className="relative flex items-center gap-1.5 overflow-x-auto nav-scroll"
+            className="relative flex items-center gap-1.5 overflow-x-auto md:overflow-visible nav-scroll py-2"
             aria-label="Season selector"
           >
             {SEASONS.map((s) => {
@@ -1197,7 +1237,7 @@ function Navbar({ active, onChange, theme, lang, setLang, t, view, onHome, onMes
             {indicator.visible && (
               <span
                 aria-hidden
-                className="nav-underline absolute -bottom-1 h-1 rounded-full pointer-events-none"
+                className="nav-underline absolute bottom-1 h-1 rounded-full pointer-events-none"
                 style={{
                   width: indicator.w,
                   transform: `translateX(${indicator.x}px)`,
@@ -1831,6 +1871,128 @@ function Team({ season, theme, t, lang }){
 }
 
 /* ================================================================== */
+/*  Anthem (شارة الموسم) — streaming mp3 player per song                 */
+/* ================================================================== */
+function fmtTime(s){
+  if (!s || isNaN(s)) return "0:00";
+  const m = Math.floor(s / 60), x = Math.floor(s % 60);
+  return m + ":" + String(x).padStart(2, "0");
+}
+
+function AudioPlayer({ track, index, theme, t }){
+  const ref = useRef(null);
+  const [playing, setPlaying] = useState(false);
+  const [cur, setCur] = useState(0);
+  const [dur, setDur] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  const toggle = () => {
+    const a = ref.current; if (!a) return;
+    if (a.paused) {
+      document.querySelectorAll("audio").forEach(o => { if (o !== a) o.pause(); }); // solo
+      setLoading(true);
+      const p = a.play();
+      if (p && p.catch) p.catch(() => setLoading(false));
+    } else {
+      a.pause();
+    }
+  };
+
+  const seek = (e) => {
+    const a = ref.current; if (!a || !dur) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    let ratio = (e.clientX - r.left) / r.width;     // track is forced LTR below
+    ratio = Math.min(1, Math.max(0, ratio));
+    a.currentTime = ratio * dur;
+    setCur(a.currentTime);
+  };
+
+  return (
+    <div className="rounded-2xl border-2 p-4 sm:p-5 flex items-center gap-4"
+         style={{ borderColor: theme.ink, background: "white", boxShadow: `6px 6px 0 ${theme.ink}` }}>
+      <audio
+        ref={ref}
+        src={track.src}
+        preload="none"
+        onPlay={() => { setPlaying(true); setLoading(false); }}
+        onPause={() => setPlaying(false)}
+        onWaiting={() => setLoading(true)}
+        onPlaying={() => setLoading(false)}
+        onTimeUpdate={() => ref.current && setCur(ref.current.currentTime)}
+        onLoadedMetadata={() => ref.current && setDur(ref.current.duration)}
+        onEnded={() => setPlaying(false)}
+      />
+
+      {/* play / pause */}
+      <button
+        onClick={toggle}
+        aria-label={playing ? "pause" : "play"}
+        className={"w-14 h-14 rounded-full grid place-items-center border-2 shrink-0 transition-transform hover:scale-105 " + (playing ? "playing-pulse" : "")}
+        style={{ background: theme.primary, borderColor: theme.ink, color: theme.ink,
+                 boxShadow: `3px 3px 0 ${theme.ink}`, "--pulse": `color-mix(in oklab, ${theme.primary} 70%, transparent)` }}
+      >
+        {loading ? (
+          <svg viewBox="0 0 24 24" width="22" height="22" className="animate-spin" fill="none" stroke={theme.ink} strokeWidth="2.5" strokeLinecap="round">
+            <path d="M21 12a9 9 0 1 1-6.2-8.6"/>
+          </svg>
+        ) : playing ? (
+          <svg viewBox="0 0 24 24" width="22" height="22" fill={theme.ink} aria-hidden><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+        ) : (
+          <svg viewBox="0 0 24 24" width="22" height="22" fill={theme.ink} aria-hidden><path d="M8 5v14l11-7z"/></svg>
+        )}
+      </button>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-2">
+          <span className={"eq " + (playing ? "playing" : "")} style={{ color: theme.secondary }}>
+            <i/><i/><i/><i/><i/>
+          </span>
+          <span className="font-display font-bold text-sm truncate" style={{ color: theme.ink }}>
+            {t.anthemTrack} {index + 1}
+          </span>
+        </div>
+
+        {/* progress (forced LTR so the fill + seek math read the same in RTL) */}
+        <div onClick={seek} dir="ltr"
+             className="h-2.5 rounded-full cursor-pointer relative overflow-hidden"
+             style={{ background: `color-mix(in oklab, ${theme.ink} 14%, white)` }}>
+          <div className="h-full rounded-full" style={{ width: dur ? (cur / dur * 100) + "%" : "0%", background: theme.primary }}/>
+        </div>
+        <div dir="ltr" className="flex justify-between text-[11px] mt-1 font-mono" style={{ color: theme.ink, opacity: .6 }}>
+          <span>{fmtTime(cur)}</span><span>{fmtTime(dur)}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Anthem({ season, theme, t, lang }){
+  const songs = SEASON_SONGS[season.id];
+  if (!songs || !songs.length) return null;
+  return (
+    <section id="anthem" data-screen-label="Anthem" className="py-20 md:py-28 border-t-2"
+             style={{ borderColor: theme.ink, background: "white" }}>
+      <div className="max-w-5xl mx-auto px-5 md:px-8">
+        <SectionHead kicker={t.anthemKicker} title={t.anthemTitle} theme={theme}/>
+        <p className="-mt-6 mb-10 max-w-2xl text-base md:text-lg" style={{ color: theme.ink, opacity:.78 }}>
+          {t.anthemSubtitle}
+        </p>
+
+        <div className="grid sm:grid-cols-2 gap-5">
+          {songs.map((s, i) => <AudioPlayer key={s.src} track={s} index={i} theme={theme} t={t}/>)}
+        </div>
+
+        <div className="mt-8 inline-flex flex-col gap-1 px-5 py-4 rounded-2xl border-2"
+             style={{ borderColor: theme.ink, background: theme.panel }}>
+          <span className="font-display font-bold text-sm" style={{ color: theme.ink }}>{t.creditLyrics}</span>
+          <span className="text-sm" style={{ color: theme.ink, opacity:.75 }}>{t.creditVoice}</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================== */
 /*  Sponsors — image-based, with a per-season "season partner" slot     */
 /* ================================================================== */
 function SponsorLogo({ s, theme }){
@@ -2102,6 +2264,7 @@ function App(){
             <Robot   season={active} theme={theme} t={t} lang={lang} onImageClick={(item) => setLightbox(item)}/>
             <Project season={active} theme={theme} t={t} lang={lang} onImageClick={(item) => setLightbox(item)}/>
             <Team    season={active} theme={theme} t={t} lang={lang}/>
+            <Anthem  season={active} theme={theme} t={t} lang={lang}/>
             <Sponsors season={active} theme={theme} t={t} lang={lang}/>
           </main>
           <Footer season={active} theme={theme} t={t} lang={lang}/>
