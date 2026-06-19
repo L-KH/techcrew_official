@@ -185,13 +185,16 @@ const I18N = {
     teamTitle: "أعضاء الفريق",
     teamCoaches: "المؤطّرون",
     teamStudents: "التلاميذ",
-    anthemKicker: "05 · شارة الموسم",
+    thanksKicker: "05 · شكر و تقدير",
+    thanksTitle: "شكر خاص",
+    thanksSubtitle: "إلى كلّ الأساتذة وكلّ من ساندنا خلال مرحلة التحضير — لكم منّا كلّ التقدير والامتنان.",
+    anthemKicker: "06 · شارة الموسم",
     anthemTitle: "شارة الموسم",
     anthemSubtitle: "النشيد الذي نردّده معًا في طريقنا إلى المنافسة — حماسٌ يرافق الفريق في كلّ رحلة.",
     anthemTrack: "النشيد",
     creditLyrics: "كلمات و إخراج : الأستاذ إدريس المهراوي",
     creditVoice: "الصوت : ذكاء اصطناعي",
-    sponsorsKicker: "06 · الشركاء",
+    sponsorsKicker: "07 · الشركاء",
     sponsorsTitle: "شكرًا لشركائنا",
     sponsorsSubtitle: "دعم Tech Crew هو استثمار في المستقبل والابتكار، وفي شبابٍ شغوفين بالتكنولوجيا.",
     footerViewing: "تستعرض الآن",
@@ -246,13 +249,16 @@ const I18N = {
     teamTitle: "Les Membres",
     teamCoaches: "Coachs",
     teamStudents: "Membres étudiants",
-    anthemKicker: "05 · Hymne de la saison",
+    thanksKicker: "05 · Remerciements",
+    thanksTitle: "Remerciements spéciaux",
+    thanksSubtitle: "À tous les enseignants et à toutes les personnes qui nous ont accompagnés durant la préparation — toute notre gratitude.",
+    anthemKicker: "06 · Hymne de la saison",
     anthemTitle: "Hymne de la saison",
     anthemSubtitle: "Le chant que nous reprenons ensemble sur la route de la compétition — l'énergie qui accompagne l'équipe à chaque voyage.",
     anthemTrack: "Hymne",
     creditLyrics: "Paroles & réalisation : M. Driss El Mehraoui",
     creditVoice: "Voix : Intelligence artificielle",
-    sponsorsKicker: "06 · Partenaires",
+    sponsorsKicker: "07 · Partenaires",
     sponsorsTitle: "Merci à nos Partenaires",
     sponsorsSubtitle: "Soutenir Tech Crew, c'est investir dans l'avenir, l'innovation et la jeunesse passionnée par la technologie.",
     footerViewing: "Saison —",
@@ -777,6 +783,18 @@ const SEASON_SONGS = {
   ],
 };
 
+/* Honorable mentions — teachers & helpers. Shown only on the listed seasons. */
+const SPECIAL_THANKS = [
+  "إدريس المهراوي",
+  "زكرياء الطاهري",
+  "صلاح إفري",
+  "عبد الرزاق الوردي",
+  "محمد أجكرنون",
+  "كريم الكرش",
+  "عبد الواحد البشري",
+];
+const THANKS_SEASONS = ["submerged", "unearthed"];
+
 /* ================================================================== */
 /*  Atoms                                                              */
 /* ================================================================== */
@@ -1158,23 +1176,46 @@ function BoyAvatar({ theme, variant=0 }){
 /* ================================================================== */
 /*  Navbar with sliding underline                                      */
 /* ================================================================== */
+function LangToggle({ lang, setLang, theme }){
+  return (
+    <div className="flex shrink-0 rounded-full border-2 p-0.5"
+         style={{ borderColor: theme.ink, background: theme.panel }}
+         role="group" aria-label="Language">
+      {["ar","fr"].map(l => (
+        <button
+          key={l}
+          onClick={() => setLang(l)}
+          className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider"
+          style={{ background: lang===l ? theme.ink : "transparent", color: lang===l ? theme.panel : theme.ink }}
+        >
+          {l}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function Navbar({ active, onChange, theme, lang, setLang, t, view, onHome, onMessage }){
   const navRef = useRef(null);
   const btnRefs = useRef({});
   const [indicator, setIndicator] = useState({ x: 0, w: 0, visible: false });
+  const [menuOpen, setMenuOpen] = useState(false);
   const onMsgPage = view === "message";
 
   useLayoutEffect(() => {
     const measure = () => {
       const btn = btnRefs.current[active.id];
-      if (btn) setIndicator({ x: btn.offsetLeft, w: btn.offsetWidth, visible: true });
+      if (btn && btn.offsetWidth) setIndicator({ x: btn.offsetLeft, w: btn.offsetWidth, visible: true });
     };
     measure();
     // re-measure after fonts settle and on resize so it stays aligned (LTR + RTL)
     const id = window.setTimeout(measure, 120);
     window.addEventListener("resize", measure);
     return () => { window.clearTimeout(id); window.removeEventListener("resize", measure); };
-  }, [active.id, lang, view]);
+  }, [active.id, lang, view, menuOpen]);
+
+  const pickSeason = (s, e) => { onChange(s, e); setMenuOpen(false); };
+  const pickMessage = () => { onMessage(); setMenuOpen(false); };
 
   return (
     <header
@@ -1185,7 +1226,7 @@ function Navbar({ active, onChange, theme, lang, setLang, t, view, onHome, onMes
       }}
     >
       <div className="max-w-7xl mx-auto px-3 md:px-5 h-[82px] flex items-center justify-between gap-2 md:gap-4">
-        <a href="#top" onClick={(e) => { e.preventDefault(); onHome(); }} className="flex items-center gap-3 shrink-0 cursor-pointer">
+        <a href="#top" onClick={(e) => { e.preventDefault(); onHome(); setMenuOpen(false); }} className="flex items-center gap-3 shrink-0 cursor-pointer">
           <Logo theme={theme} size={54}/>
           <div className="hidden lg:block leading-tight">
             <div className="font-display font-bold text-lg" style={{ color: theme.ink }}>Tech Crew</div>
@@ -1195,10 +1236,11 @@ function Navbar({ active, onChange, theme, lang, setLang, t, view, onHome, onMes
           </div>
         </a>
 
-        <div className="flex items-center gap-2 md:gap-3">
+        {/* ---------- desktop controls (lg+) ---------- */}
+        <div className="hidden lg:flex items-center gap-3">
           <button
             onClick={onMessage}
-            className="inline-flex items-center px-3 lg:px-4 py-2 rounded-full text-[12px] lg:text-[13px] font-semibold uppercase tracking-wider whitespace-nowrap border-2 shrink-0"
+            className="inline-flex items-center px-4 py-2 rounded-full text-[13px] font-semibold uppercase tracking-wider whitespace-nowrap border-2 shrink-0"
             style={{
               background: onMsgPage ? theme.primary : "transparent",
               color: theme.ink,
@@ -1211,7 +1253,7 @@ function Navbar({ active, onChange, theme, lang, setLang, t, view, onHome, onMes
           </button>
           <nav
             ref={navRef}
-            className="relative flex items-center gap-1.5 overflow-x-auto md:overflow-visible nav-scroll py-2"
+            className="relative flex items-center gap-1.5 py-2"
             aria-label="Season selector"
           >
             {SEASONS.map((s) => {
@@ -1221,7 +1263,7 @@ function Navbar({ active, onChange, theme, lang, setLang, t, view, onHome, onMes
                   key={s.id}
                   ref={el => { if (el) btnRefs.current[s.id] = el; }}
                   onClick={(e) => onChange(s, e)}
-                  className="relative px-3 md:px-4 py-2 rounded-full text-[12px] md:text-[13px] font-semibold uppercase tracking-wider whitespace-nowrap border-2"
+                  className="relative px-4 py-2 rounded-full text-[13px] font-semibold uppercase tracking-wider whitespace-nowrap border-2"
                   style={{
                     background: isActive ? s.theme.primary : "transparent",
                     color: isActive ? s.theme.ink : theme.ink,
@@ -1230,9 +1272,8 @@ function Navbar({ active, onChange, theme, lang, setLang, t, view, onHome, onMes
                     transform: isActive ? "translate(-1.5px,-1.5px)" : "none",
                   }}
                 >
-                  <span className="hidden md:inline">{s.name}</span>
-                  <span className="md:hidden">{s.name.slice(0,4)}</span>
-                  <span className="ml-2 opacity-60 text-[10px] hidden lg:inline">{s.years}</span>
+                  {s.name}
+                  <span className="ml-2 opacity-60 text-[10px] hidden xl:inline">{s.years}</span>
                 </button>
               );
             })}
@@ -1240,39 +1281,68 @@ function Navbar({ active, onChange, theme, lang, setLang, t, view, onHome, onMes
               <span
                 aria-hidden
                 className="nav-underline absolute bottom-1 h-1 rounded-full pointer-events-none"
-                style={{
-                  left: 0,
-                  right: "auto",
-                  width: indicator.w,
-                  transform: `translateX(${indicator.x}px)`,
-                  background: theme.secondary,
-                }}
+                style={{ left: 0, right: "auto", width: indicator.w, transform: `translateX(${indicator.x}px)`, background: theme.secondary }}
               />
             )}
           </nav>
+          <LangToggle lang={lang} setLang={setLang} theme={theme}/>
+        </div>
 
-          <div
-            className="flex shrink-0 rounded-full border-2 p-0.5"
-            style={{ borderColor: theme.ink, background: theme.panel }}
-            role="group"
-            aria-label="Language"
+        {/* ---------- mobile controls (< lg) ---------- */}
+        <div className="flex lg:hidden items-center gap-2">
+          <LangToggle lang={lang} setLang={setLang} theme={theme}/>
+          <button
+            onClick={() => setMenuOpen(o => !o)}
+            aria-label="Menu" aria-expanded={menuOpen}
+            className="w-11 h-11 grid place-items-center rounded-xl border-2 shrink-0"
+            style={{ borderColor: theme.ink, background: menuOpen ? theme.primary : "transparent", color: theme.ink }}
           >
-            {["ar","fr"].map(l => (
-              <button
-                key={l}
-                onClick={() => setLang(l)}
-                className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider"
-                style={{
-                  background: lang===l ? theme.ink : "transparent",
-                  color:      lang===l ? theme.panel : theme.ink,
-                }}
-              >
-                {l}
-              </button>
-            ))}
-          </div>
+            {menuOpen ? (
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke={theme.ink} strokeWidth="2.4" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            ) : (
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke={theme.ink} strokeWidth="2.4" strokeLinecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+            )}
+          </button>
         </div>
       </div>
+
+      {/* ---------- mobile dropdown panel ---------- */}
+      {menuOpen && (
+        <div className="lg:hidden border-t-2" style={{ borderColor: theme.ink, background: theme.panel }}>
+          <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-2">
+            {SEASONS.map((s) => {
+              const isActive = s.id === active.id && !onMsgPage;
+              return (
+                <button
+                  key={s.id}
+                  onClick={(e) => pickSeason(s, e)}
+                  className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold uppercase tracking-wider border-2"
+                  style={{
+                    background: isActive ? s.theme.primary : "white",
+                    color: isActive ? s.theme.ink : theme.ink,
+                    borderColor: theme.ink,
+                    boxShadow: isActive ? `3px 3px 0 ${theme.ink}` : "none",
+                  }}
+                >
+                  <span>{s.name}</span>
+                  <span className="opacity-60 text-[11px]">{s.years}</span>
+                </button>
+              );
+            })}
+            <button
+              onClick={pickMessage}
+              className="w-full px-4 py-3 rounded-xl text-sm font-semibold uppercase tracking-wider border-2 mt-1"
+              style={{
+                background: onMsgPage ? theme.primary : "white",
+                color: theme.ink, borderColor: theme.ink,
+                boxShadow: onMsgPage ? `3px 3px 0 ${theme.ink}` : "none",
+              }}
+            >
+              {t.navMessage}
+            </button>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
@@ -1787,9 +1857,6 @@ function CoachCard({ coach, theme, lang, variant }){
           {role}
         </div>
         <div className="font-display font-bold text-xl" style={{ color: theme.ink }}>{coach.name}</div>
-        <a href={`mailto:${coach.email}`} className="block mt-1 text-xs underline decoration-dotted" style={{ color: theme.ink }}>
-          {coach.email}
-        </a>
       </div>
     </article>
   );
@@ -1868,6 +1935,42 @@ function Team({ season, theme, t, lang }){
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-y-10 gap-x-5">
             {students.map((m, i) => <MemberCard key={i} member={m} theme={theme} lang={lang} i={i}/>)}
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================== */
+/*  Special thanks — honorable mentions (teachers & helpers)            */
+/* ================================================================== */
+function SpecialThanks({ season, theme, t }){
+  if (!THANKS_SEASONS.includes(season.id)) return null;
+  return (
+    <section id="thanks" data-screen-label="Thanks" className="py-20 md:py-28 border-t-2"
+             style={{ borderColor: theme.ink, background: theme.panel }}>
+      <div className="max-w-5xl mx-auto px-5 md:px-8">
+        <SectionHead kicker={t.thanksKicker} title={t.thanksTitle} theme={theme}/>
+        <p className="-mt-6 mb-10 max-w-2xl text-base md:text-lg" style={{ color: theme.ink, opacity:.78 }}>
+          {t.thanksSubtitle}
+        </p>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          {SPECIAL_THANKS.map((name, i) => (
+            <div key={i}
+                 className="flex items-center gap-3 px-4 py-4 rounded-2xl border-2"
+                 style={{ borderColor: theme.ink, background: "white", boxShadow: `4px 4px 0 ${theme.ink}` }}>
+              <span className="w-9 h-9 rounded-full grid place-items-center border-2 shrink-0"
+                    style={{ background: theme.primary, borderColor: theme.ink }}>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill={theme.ink} aria-hidden>
+                  <path d="M12 17.3l-6.18 3.7 1.64-7.03L2 9.24l7.19-.61L12 2l2.81 6.63 7.19.61-5.46 4.73 1.64 7.03z"/>
+                </svg>
+              </span>
+              <span className="font-display font-bold text-[15px] leading-tight" style={{ color: theme.ink }}>
+                {name}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -2080,10 +2183,7 @@ function Footer({ season, theme, t, lang }){
             {coaches.map((c, i) => (
               <div key={i} className="leading-relaxed">
                 <div className="font-display font-bold text-base" style={{ color: onSecondary }}>{c.name}</div>
-                <div className="text-xs uppercase tracking-[0.18em] mb-2" style={{ color: muted }}>{lang === "ar" ? c.roleAR : c.roleFR}</div>
-                <a href={`mailto:${c.email}`} className="flex items-center gap-2 text-sm" style={{ color: onSecondary }}>
-                  <MailIcon color={onSecondary}/> {c.email}
-                </a>
+                <div className="text-xs uppercase tracking-[0.18em]" style={{ color: muted }}>{lang === "ar" ? c.roleAR : c.roleFR}</div>
               </div>
             ))}
           </div>
@@ -2268,6 +2368,7 @@ function App(){
             <Robot   season={active} theme={theme} t={t} lang={lang} onImageClick={(item) => setLightbox(item)}/>
             <Project season={active} theme={theme} t={t} lang={lang} onImageClick={(item) => setLightbox(item)}/>
             <Team    season={active} theme={theme} t={t} lang={lang}/>
+            <SpecialThanks season={active} theme={theme} t={t}/>
             <Anthem  season={active} theme={theme} t={t} lang={lang}/>
             <Sponsors season={active} theme={theme} t={t} lang={lang}/>
           </main>
